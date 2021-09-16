@@ -1,0 +1,7 @@
+{
+    "name": "shSMS",
+    "integrations": {
+        "capacitor": {}
+    },
+    "type": "react"
+}
