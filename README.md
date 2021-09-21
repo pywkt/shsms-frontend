@@ -252,6 +252,13 @@ Can you believe it?? You've got some top-notch patience if you made it all the w
 
 Unless you did this part first, then you've still got to set up the server, but trust me, it's waayyyyyy easier/faster. Like, all you have to do is make a few accounts, clone, add env variables and push it to Heroku or whatever server you want to use.
 
+### To-Do:
+   * Ability to select from native contacts for new message.
+   * Add multiple Twilio phone numbers to same app instance.
+   * Send text with MMS/multiple MMS in one message.
+   * Swipe down to refresh.
+
+
 #### Useful Links
 Gradle:
 
