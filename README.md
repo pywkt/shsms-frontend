@@ -1,7 +1,5 @@
-# shSMS
-## Self Hosted Short Message Service
-
-// image //
+## shSMS
+#### Self Hosted Short Message Service
 
 ---
 
@@ -23,6 +21,10 @@ Please note: This app makes several assumptions about you as a user. First and f
    * Send and receive MMS (Multimedia Messaging Service) with people who are using a standard mobile device. 
    * Recieve push notifications when a new message is received. An alert will show and the device will vibrate and/or chime when a new message is recieved just like you would expect without any Google services.
    * Run on any computer locally (not hosted publically on the internet) and have the same functionality as the native Android app with updates in real-time.
+
+![shSMS](./public/docs-images/contact-list.png "shSMS") ![shSMS](./public/docs-images/message-01.png "shSMS") ![shSMS](./public/docs-images/settings-01.png "shSMS")
+
+---
 
 ## Installation
 ---
