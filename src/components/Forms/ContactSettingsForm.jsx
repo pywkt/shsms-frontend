@@ -19,7 +19,8 @@ const ContactSettingsForm = ({ closeDialog }) => {
             {
                 phoneNumber,
                 newAlias: data.contactAlias
-            })
+            },
+            { headers: { "enc": process.env.REACT_APP_KEY_HASH } })
 
         window.location.reload()
 

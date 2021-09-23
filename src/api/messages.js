@@ -1,7 +1,8 @@
 import * as axios from 'axios';
 
 export const getMessages = async (phoneNumber) => {
-    const response = await axios.get(`${process.env.REACT_APP_SMS_SERVER_URL}/messages/${phoneNumber}`, { headers: { "enc": process.env.REACT_APP_KEY_HASH } })
+    const response = await axios.get(`${process.env.REACT_APP_SMS_SERVER_URL}/messages/${phoneNumber}`,
+        { headers: { "enc": process.env.REACT_APP_KEY_HASH } })
     return response?.data
 }
 
@@ -26,5 +27,5 @@ export const sendImage = async (messageData) => {
 
     const newFileName = response?.data?.savedImage
 
-    return { status: response?.status, imageUrl: `${process.env.REACT_APP_SMS_SERVER_URL}/media/${newFileName}`}
+    return { status: response?.status, imageUrl: `${process.env.REACT_APP_SMS_SERVER_URL}/media/${newFileName}` }
 }
