@@ -14,7 +14,7 @@ Please note: This app makes several assumptions about you as a user. First and f
 
    * shSMS is not intended to be 100% private, even on your end (depending on how you host). Your messages go through Twilio. You can delete them, but still, they must go through Twilio servers at some point in order to get to you. Think of it as a tool to help you stay more _anonymous_
    
-   * If you choose to host your server on Heroku: Heroku is now owned by SalesForce. SalesForce is a beast when it comes to data. Assume they have _everything_ that comes through their servers and are using it.
+   * If you choose to host your server on Heroku: Heroku is now owned by Salesforce. Salesforce is a beast when it comes to data. Assume they have _everything_ that comes through their servers and are using it.
    
    * If you choose to host your database on mLab (mongodb) your data is also in their hands. We can encrypt our entries before they go in to the database (coming soon), but the fact remains that even though we're "self-hosting" away from the major providers, we're still depending on someone else to hold our information.
 
