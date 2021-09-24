@@ -13,6 +13,7 @@ import NewMessageForm from "../NewMessageForm";
 import useStyles from './styles';
 import { getContacts } from '../../api/contacts';
 import { sortArrayOfObjects } from "../../helpers/sorting";
+import PullToRefresh from "react-simple-pull-to-refresh";
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const classes = useStyles();
@@ -55,31 +56,39 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
 
     useEffect(updateCallback, [])
 
+    const handleRefresh = async () => {
+        const contacts = await getContacts();
+        const sortedContacts = sortArrayOfObjects(contacts, 'lastMessageRecieved', true)
+
+        setContacts(sortedContacts)
+    }
+
     return (
         <>
             <List>
-                {contacts && Object.values(contacts).map(item => (
-                    <Link key={item.phoneNumber} to={`/messages/${item.phoneNumber}`} style={{ textDecoration: 'none' }}>
-                        <ListItem divider>
-                            <ListItemAvatar>
-                                <Avatar />
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={item?.alias || formatPhoneNumber(item?.phoneNumber)}
-                                primaryTypographyProps={{
-                                    color: 'textPrimary',
-                                    variant: 'h2'
-                                }}
-                                secondary={formatDistanceStrict(new Date(item?.lastMessageRecieved), new Date()) + ' ago'}
-                                secondaryTypographyProps={{
-                                    color: 'textSecondary',
-                                    variant: 'caption'
-                                }}
-                            />
-                        </ListItem>
-                    </Link>
-                ))}
-
+                <PullToRefresh onRefresh={handleRefresh} className={classes.pullContainer} pullingContent={' '}>
+                    {contacts && Object.values(contacts).map(item => (
+                        <Link key={item.phoneNumber} to={`/messages/${item.phoneNumber}`} style={{ textDecoration: 'none' }}>
+                            <ListItem divider>
+                                <ListItemAvatar>
+                                    <Avatar />
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={item?.alias || formatPhoneNumber(item?.phoneNumber)}
+                                    primaryTypographyProps={{
+                                        color: 'textPrimary',
+                                        variant: 'h2'
+                                    }}
+                                    secondary={formatDistanceStrict(new Date(item?.lastMessageRecieved), new Date()) + ' ago'}
+                                    secondaryTypographyProps={{
+                                        color: 'textSecondary',
+                                        variant: 'caption'
+                                    }}
+                                />
+                            </ListItem>
+                        </Link>
+                    ))}
+                </PullToRefresh>
             </List>
 
             <Fab size='small' color='secondary' aria-label='new message' className={classes.newMessageButton} onClick={handleNewMessageDialog}>
