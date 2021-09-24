@@ -57,7 +57,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     useEffect(updateCallback, [])
 
     const handleRefresh = async () => {
-        console.log('iresnt')
         const contacts = await getContacts();
         const sortedContacts = sortArrayOfObjects(contacts, 'lastMessageRecieved', true)
 
