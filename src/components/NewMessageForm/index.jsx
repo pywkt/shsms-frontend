@@ -4,6 +4,7 @@ import TextField from "@material-ui/core/TextField";
 import DialogForm from '../DialogForm';
 import PhoneNumberInput from './PhoneNumberInput';
 import { sendMessage } from '../../api/messages';
+// import ContactsX from 'cordova-plugin-contacts-x';
 
 const NewMessageForm = ({ open, closeDialog }) => {
     const { control, handleSubmit, getValues, setValue } = useForm();
