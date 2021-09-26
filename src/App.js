@@ -37,6 +37,7 @@ const App = ({ socket }) => {
   useEffect(initApp, [])
 
   const handleIncomingMessage = async (data) => {
+    console.log('data:', data)
     await scheduleLocalNotification(data)
     return
   }
@@ -49,8 +50,17 @@ const App = ({ socket }) => {
           <ThemeProvider theme={settingsContext?.settings?.theme?.theme}>
             <HeaderBar label={titlebarLabel}>
               <Router>
-                <ContactList socket={socket} path='/' updateTitlebar={updateTitlebarLabel} incomingMessageCallback={(data) => handleIncomingMessage(data)} />
-                <Messages socket={socket} path='/messages/:phoneNumber' updateTitlebar={updateTitlebarLabel} incomingMessageCallback={(data) => handleIncomingMessage(data)} />
+                <ContactList
+                  socket={socket} path='/'
+                  updateTitlebar={updateTitlebarLabel}
+                  incomingMessageCallback={(data) => handleIncomingMessage(data)}
+                />
+                <Messages
+                  socket={socket}
+                  path='/messages/:phoneNumber'
+                  updateTitlebar={updateTitlebarLabel}
+                  incomingMessageCallback={(data) => handleIncomingMessage(data)}
+                />
               </Router>
             </HeaderBar>
           </ThemeProvider>

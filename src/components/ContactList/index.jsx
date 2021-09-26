@@ -12,7 +12,7 @@ import AddIcon from '@material-ui/icons/Add';
 import NewMessageForm from "../NewMessageForm";
 import useStyles from './styles';
 import { getContacts } from '../../api/contacts';
-import { sortArrayOfObjects } from "../../helpers/sorting";
+import { groupArrayOfObjects } from "../../helpers/sorting";
 import PullToRefresh from "react-simple-pull-to-refresh";
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
@@ -20,18 +20,27 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const [contacts, setContacts] = useState([])
     const [newMessageOpen, setNewMessageOpen] = useState(false);
 
+    console.log('contacts:', contacts)
+
     const handleNewMessageDialog = () => setNewMessageOpen((prev) => !prev);
 
     const updateCallback = useCallback(() => {
         updateTitlebar('Messages')
 
-        const handleIncomingMessage = (data) => {
+        const getAndSetContacts = async () => {
+            const contacts02 = await getContacts();
+            const groupedContacts = groupArrayOfObjects(contacts02, 'toPhoneNumber')
+
+            setContacts(Object.entries(groupedContacts))
+        }
+
+        const handleIncomingMessage = async (data) => {
             if (/(messages)/.test(window.location.pathname)) {
                 return
             }
 
             incomingMessageCallback(data)
-            setContacts(data)
+            getAndSetContacts()
         }
 
         const initSocket = () => {
@@ -39,13 +48,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
             return () => {
                 socket.off('updateContacts', handleIncomingMessage)
             }
-        }
-
-        const getAndSetContacts = async () => {
-            const contacts = await getContacts();
-            const sortedContacts = sortArrayOfObjects(contacts, 'lastMessageRecieved', true)
-
-            setContacts(sortedContacts)
         }
 
         if (contacts.length === 0) {
@@ -57,18 +59,33 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     useEffect(updateCallback, [])
 
     const handleRefresh = async () => {
-        const contacts = await getContacts();
-        const sortedContacts = sortArrayOfObjects(contacts, 'lastMessageRecieved', true)
+        const contacts03 = await getContacts();
+        const groupedContacts = groupArrayOfObjects(contacts03, 'toPhoneNumber')
 
-        setContacts(sortedContacts)
+        setContacts(Object.entries(groupedContacts))
     }
 
     return (
         <>
             <List>
-                <PullToRefresh onRefresh={handleRefresh} className={classes.pullContainer} pullingContent={' '}>
+                {contacts && contacts?.map((item, index) => (
+                    <div key={item?.[0]}>
+                        <ListItemText primary={item?.[0]} primaryTypographyProps={{ color: 'textPrimary', variant: 'h2' }} />
+                        
+                        <List key={index}>
+                            {item?.[1]?.map(itemContact => (
+                                <Link to='#' key={itemContact?._id}>
+                                    <ListItemText primary={itemContact?.phoneNumber} primaryTypographyProps={{ color: 'textSecondary', variant: 'h4' }} />
+                                </Link>
+                            ))}
+                        </List>
+
+                    </div>
+                ))}
+
+                {/* <PullToRefresh onRefresh={handleRefresh} className={classes.pullContainer} pullingContent={' '}>
                     {contacts && Object.values(contacts).map(item => (
-                        <Link key={item.phoneNumber} to={`/messages/${item.phoneNumber}`} style={{ textDecoration: 'none' }}>
+                        <Link key={item._id} to={`/messages/${item.phoneNumber}`} style={{ textDecoration: 'none' }}>
                             <ListItem divider>
                                 <ListItemAvatar>
                                     <Avatar />
@@ -88,7 +105,7 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                             </ListItem>
                         </Link>
                     ))}
-                </PullToRefresh>
+                </PullToRefresh> */}
             </List>
 
             <Fab size='small' color='secondary' aria-label='new message' className={classes.newMessageButton} onClick={handleNewMessageDialog}>
