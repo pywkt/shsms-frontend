@@ -20,8 +20,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const [contacts, setContacts] = useState([])
     const [newMessageOpen, setNewMessageOpen] = useState(false);
 
-    console.log('contacts:', contacts)
-
     const handleNewMessageDialog = () => setNewMessageOpen((prev) => !prev);
 
     const updateCallback = useCallback(() => {
@@ -68,14 +66,22 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     return (
         <>
             <List>
+
+                {/* receiving number */}
                 {contacts && contacts?.map((item, index) => (
                     <div key={item?.[0]}>
                         <ListItemText primary={item?.[0]} primaryTypographyProps={{ color: 'textPrimary', variant: 'h2' }} />
-                        
+
                         <List key={index}>
+
+                            {/* number that sent the text */}
                             {item?.[1]?.map(itemContact => (
-                                <Link to='#' key={itemContact?._id}>
-                                    <ListItemText primary={itemContact?.phoneNumber} primaryTypographyProps={{ color: 'textSecondary', variant: 'h4' }} />
+                                <Link
+                                    key={itemContact?._id}
+                                    to={`/messages/${itemContact.toPhoneNumber}/${itemContact.phoneNumber}`}
+                                    state={{ toPhoneNumber: itemContact.toPhoneNumber, fromPhoneNumber: itemContact.phoneNumber }}
+                                >
+                                    <ListItemText primary={itemContact?.alias || itemContact?.phoneNumber} primaryTypographyProps={{ color: 'textSecondary', variant: 'h4' }} />
                                 </Link>
                             ))}
                         </List>

@@ -37,7 +37,6 @@ const App = ({ socket }) => {
   useEffect(initApp, [])
 
   const handleIncomingMessage = async (data) => {
-    console.log('data:', data)
     await scheduleLocalNotification(data)
     return
   }
@@ -57,7 +56,7 @@ const App = ({ socket }) => {
                 />
                 <Messages
                   socket={socket}
-                  path='/messages/:phoneNumber'
+                  path='/messages/:toPhoneNumber/:fromPhoneNumber'
                   updateTitlebar={updateTitlebarLabel}
                   incomingMessageCallback={(data) => handleIncomingMessage(data)}
                 />
