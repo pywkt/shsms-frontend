@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { Link } from '@reach/router';
 import formatDistanceStrict from 'date-fns/formatDistanceStrict';
 import { formatPhoneNumber } from "react-phone-number-input";
+import { SettingsContext } from "../../context/settingsContext";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -20,37 +21,26 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const classes = useStyles();
+    const settingsContext = useContext(SettingsContext)
+
     const [contacts, setContacts] = useState([])
     const [newMessageOpen, setNewMessageOpen] = useState(false);
 
-    const [openLists, setOpenLists] = useState([]);
-    console.log('listOpen:', openLists)
-
-    
     const handleOpenList = (listIndex) => {
-        console.log('handleOpenList listIndex:', listIndex)
-        if (openLists.indexOf(listIndex) === -1) {
-            const listIndexToRemove = openLists.indexOf(listIndex)
-            console.log('listIndexToRemove:', listIndexToRemove);
-
-            setOpenLists(prev => [...prev, listIndex])
-
-            // setOpenLists(prev => [...prev, listIndex])
+        if (settingsContext.settings?.openLists?.indexOf(listIndex) === -1) {
+            settingsContext.setSettings({
+                ...settingsContext.settings,
+                openLists: [...settingsContext.settings?.openLists, listIndex]
+            })
         } else {
-            const itemToRemove = openLists.indexOf(listIndex)
-            const updatedLists = openLists.splice(itemToRemove, 1)
-            console.log(updatedLists)
-
-            setOpenLists(prev => [...prev, updatedLists])
+            const itemToRemove = settingsContext.settings?.openLists?.indexOf(listIndex)
+            const updatedLists = settingsContext.settings?.openLists?.splice(itemToRemove, 1)
+            settingsContext.setSettings({
+                ...settingsContext.settings,
+                openLists: [...settingsContext.settings?.openLists, updatedLists]
+            })
         }
-        // else {
-        //     const updatedListIndex = openLists.push(listIndex)
-        //     setOpenLists(updatedListIndex)
-        // }
-        
     }
-
-    console.log(contacts)
 
     const handleNewMessageDialog = () => setNewMessageOpen((prev) => !prev);
 
@@ -108,11 +98,11 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                                     primary={formatPhoneNumber(item?.[0])}
                                     primaryTypographyProps={{ color: 'textPrimary', variant: 'h3' }}
                                 />
-                                {openLists.includes(index) ? <ExpandLess /> : <ExpandMore />}
+                                {settingsContext.settings?.openLists?.includes(index) ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
 
 
-                            <Collapse in={openLists?.indexOf(index) !== -1} timeout="auto" unmountOnExit>
+                            <Collapse in={settingsContext.settings?.openLists?.indexOf(index) !== -1} timeout="auto" unmountOnExit>
                                 <List key={index} dense disablePadding>
 
                                     {/* number that sent the text */}
@@ -120,7 +110,7 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                                         <Link
                                             key={itemContact?._id}
                                             to={`/messages/${itemContact.toPhoneNumber}/${itemContact.phoneNumber}`}
-                                            state={{ toPhoneNumber: itemContact.toPhoneNumber, fromPhoneNumber: itemContact.phoneNumber, openLists }}
+                                            state={{ toPhoneNumber: itemContact.toPhoneNumber, fromPhoneNumber: itemContact.phoneNumber }}
                                             style={{ textDecoration: 'none' }}
                                         >
                                             <ListItem divider className={classes.fromNumberListItem}>
