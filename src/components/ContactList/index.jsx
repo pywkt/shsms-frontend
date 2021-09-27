@@ -14,11 +14,43 @@ import useStyles from './styles';
 import { getContacts } from '../../api/contacts';
 import { groupArrayOfObjects } from "../../helpers/sorting";
 import PullToRefresh from "react-simple-pull-to-refresh";
+import Collapse from '@material-ui/core/Collapse';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const classes = useStyles();
     const [contacts, setContacts] = useState([])
     const [newMessageOpen, setNewMessageOpen] = useState(false);
+
+    const [openLists, setOpenLists] = useState([]);
+    console.log('listOpen:', openLists)
+
+    
+    const handleOpenList = (listIndex) => {
+        console.log('handleOpenList listIndex:', listIndex)
+        if (openLists.indexOf(listIndex) === -1) {
+            const listIndexToRemove = openLists.indexOf(listIndex)
+            console.log('listIndexToRemove:', listIndexToRemove);
+
+            setOpenLists(prev => [...prev, listIndex])
+
+            // setOpenLists(prev => [...prev, listIndex])
+        } else {
+            const itemToRemove = openLists.indexOf(listIndex)
+            const updatedLists = openLists.splice(itemToRemove, 1)
+            console.log(updatedLists)
+
+            setOpenLists(prev => [...prev, updatedLists])
+        }
+        // else {
+        //     const updatedListIndex = openLists.push(listIndex)
+        //     setOpenLists(updatedListIndex)
+        // }
+        
+    }
+
+    console.log(contacts)
 
     const handleNewMessageDialog = () => setNewMessageOpen((prev) => !prev);
 
@@ -65,29 +97,56 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
 
     return (
         <>
-            <List>
+            <List disablePadding>
+                <PullToRefresh onRefresh={handleRefresh} className={classes.pullContainer} pullingContent={' '}>
+                    {/* receiving number */}
+                    {contacts && contacts?.map((item, index) => (
+                        <div key={item?.[0]}>
 
-                {/* receiving number */}
-                {contacts && contacts?.map((item, index) => (
-                    <div key={item?.[0]}>
-                        <ListItemText primary={item?.[0]} primaryTypographyProps={{ color: 'textPrimary', variant: 'h2' }} />
+                            <ListItem disableGutters button onClick={() => handleOpenList(index)} className={classes.collapsablePanel}>
+                                <ListItemText
+                                    primary={formatPhoneNumber(item?.[0])}
+                                    primaryTypographyProps={{ color: 'textPrimary', variant: 'h3' }}
+                                />
+                                {openLists.includes(index) ? <ExpandLess /> : <ExpandMore />}
+                            </ListItem>
 
-                        <List key={index}>
 
-                            {/* number that sent the text */}
-                            {item?.[1]?.map(itemContact => (
-                                <Link
-                                    key={itemContact?._id}
-                                    to={`/messages/${itemContact.toPhoneNumber}/${itemContact.phoneNumber}`}
-                                    state={{ toPhoneNumber: itemContact.toPhoneNumber, fromPhoneNumber: itemContact.phoneNumber }}
-                                >
-                                    <ListItemText primary={itemContact?.alias || itemContact?.phoneNumber} primaryTypographyProps={{ color: 'textSecondary', variant: 'h4' }} />
-                                </Link>
-                            ))}
-                        </List>
+                            <Collapse in={openLists?.indexOf(index) !== -1} timeout="auto" unmountOnExit>
+                                <List key={index} dense disablePadding>
 
-                    </div>
-                ))}
+                                    {/* number that sent the text */}
+                                    {item?.[1]?.map(itemContact => (
+                                        <Link
+                                            key={itemContact?._id}
+                                            to={`/messages/${itemContact.toPhoneNumber}/${itemContact.phoneNumber}`}
+                                            state={{ toPhoneNumber: itemContact.toPhoneNumber, fromPhoneNumber: itemContact.phoneNumber, openLists }}
+                                            style={{ textDecoration: 'none' }}
+                                        >
+                                            <ListItem divider className={classes.fromNumberListItem}>
+                                                <ListItemAvatar>
+                                                    <Avatar className={classes.contactsListAvatar} />
+                                                </ListItemAvatar>
+                                                <ListItemText
+                                                    primary={itemContact?.alias || formatPhoneNumber(itemContact?.phoneNumber)}
+                                                    primaryTypographyProps={{ color: 'textSecondary', variant: 'h4' }}
+                                                    secondary={formatDistanceStrict(new Date(itemContact?.lastMessageRecieved), new Date()) + ' ago'}
+                                                    secondaryTypographyProps={{
+                                                        color: 'textSecondary',
+                                                        variant: 'caption'
+                                                    }}
+
+                                                />
+                                            </ListItem>
+
+                                        </Link>
+                                    ))}
+                                </List>
+                            </Collapse>
+
+                        </div>
+                    ))}
+                </PullToRefresh>
 
                 {/* <PullToRefresh onRefresh={handleRefresh} className={classes.pullContainer} pullingContent={' '}>
                     {contacts && Object.values(contacts).map(item => (

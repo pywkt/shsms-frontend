@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { formatPhoneNumber } from 'react-phone-number-input';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -90,6 +91,7 @@ const SendMessageForm = ({ phoneNumber, locationState }) => {
                                         fullWidth
                                         size='small'
                                         label='Message'
+                                        placeholder={`Sending from ${formatPhoneNumber(locationState?.toPhoneNumber)}`}
                                         variant='outlined'
                                         InputProps={{
                                             endAdornment: <SendButton cb={handleImageCallback} loading={loading} />
