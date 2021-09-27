@@ -25,7 +25,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const settingsContext = useContext(SettingsContext)
     const [contacts, setContacts] = useState([])
     const [newMessageOpen, setNewMessageOpen] = useState(false);
-
     const handleNewMessageDialog = () => setNewMessageOpen((prev) => !prev);
 
     const handleOpenList = (listIndex) => {
