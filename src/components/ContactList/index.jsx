@@ -26,6 +26,8 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const [contacts, setContacts] = useState([])
     const [newMessageOpen, setNewMessageOpen] = useState(false);
 
+    const handleNewMessageDialog = () => setNewMessageOpen((prev) => !prev);
+
     const handleOpenList = (listIndex) => {
         const callUpdateSettings = async (data) => {
             await updateSettings({
@@ -46,8 +48,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
             callUpdateSettings(updatedOpenLists)
         }
     }
-
-    const handleNewMessageDialog = () => setNewMessageOpen((prev) => !prev);
 
     const updateCallback = useCallback(() => {
         updateTitlebar('Messages')
