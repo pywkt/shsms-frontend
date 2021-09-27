@@ -22,7 +22,7 @@ const App = ({ socket }) => {
     const callGetSettings = async () => {
       const userSettings = await getSettings()
       const getTheme = await themeList.find(i => i.slug === userSettings.theme && i)
-      const contextToUpdate = { ...userSettings, theme: getTheme, _id: userSettings._id }
+      const contextToUpdate = { ...userSettings, theme: getTheme, _id: userSettings._id, openLists: userSettings?.openLists }
 
       if (contextToUpdate.theme.theme !== settingsContext.settings.theme) {
         settingsContext.setSettings(contextToUpdate)

@@ -18,27 +18,32 @@ import PullToRefresh from "react-simple-pull-to-refresh";
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import { updateSettings } from "../../api/settings";
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const classes = useStyles();
     const settingsContext = useContext(SettingsContext)
-
     const [contacts, setContacts] = useState([])
     const [newMessageOpen, setNewMessageOpen] = useState(false);
 
     const handleOpenList = (listIndex) => {
+        const callUpdateSettings = async (data) => {
+            await updateSettings({
+                ...settingsContext.settings,
+                openLists: data
+            })
+
+            settingsContext.setSettings({ ...settingsContext.settings, openLists: data })
+        }
+
         if (settingsContext.settings?.openLists?.indexOf(listIndex) === -1) {
-            settingsContext.setSettings({
-                ...settingsContext.settings,
-                openLists: [...settingsContext.settings?.openLists, listIndex]
-            })
+            callUpdateSettings([...settingsContext.settings?.openLists, listIndex])
         } else {
+            const updatedOpenLists = settingsContext.settings?.openLists
             const itemToRemove = settingsContext.settings?.openLists?.indexOf(listIndex)
-            const updatedLists = settingsContext.settings?.openLists?.splice(itemToRemove, 1)
-            settingsContext.setSettings({
-                ...settingsContext.settings,
-                openLists: [...settingsContext.settings?.openLists, updatedLists]
-            })
+            updatedOpenLists.splice(itemToRemove, 1)
+
+            callUpdateSettings(updatedOpenLists)
         }
     }
 

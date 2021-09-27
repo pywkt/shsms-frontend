@@ -33,11 +33,13 @@ const SettingsForm = ({ closeDialog }) => {
         })
 
         const findThemeResult = await themeList.find(i => i.slug === result.theme && i)
+        
         currentSettings.setSettings({
             ...result.settings,
             _id: result._id,
             theme: findThemeResult,
-            showImageLink: result.showImageLink
+            showImageLink: result.showImageLink,
+            openLists: result.openLists
         })
 
         closeDialog()
