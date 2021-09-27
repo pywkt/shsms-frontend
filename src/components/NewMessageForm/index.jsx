@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import TextField from "@material-ui/core/TextField";
+import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
+import Typography from '@material-ui/core/Typography';
 import DialogForm from '../DialogForm';
 import PhoneNumberInput from './PhoneNumberInput';
 import { sendMessage } from '../../api/messages';
 // import ContactsX from 'cordova-plugin-contacts-x';
 
-const NewMessageForm = ({ open, closeDialog }) => {
+const NewMessageForm = ({ open, closeDialog, connectedNumbers }) => {
     const { control, handleSubmit, getValues, setValue } = useForm();
     const [loading, setLoading] = useState(false);
+    const [newNumberSelected, setNewNumberSelected] = useState(false);
 
     const submitNewMessageForm = async (data) => {
         setLoading(true)
         const updatedData = {
-            phoneNumber: data.phoneNumber,
+            fromPhoneNumber: data.phoneNumber,
+            toPhoneNumber: data.fromPhoneNumber,
             date: new Date().toISOString(),
             message: data.message
         }
@@ -26,8 +30,46 @@ const NewMessageForm = ({ open, closeDialog }) => {
         }
     }
 
+    const handleNewNumber = () => setNewNumberSelected(prev => !prev)
+
     const SendNewMessageForm = () =>
         <>
+            {(connectedNumbers?.length > 0 && newNumberSelected === false) ?
+                <Controller
+                    control={control}
+                    name="fromPhoneNumber"
+                    defaultValue={connectedNumbers?.[0]}
+                    render={({ field }) => (
+                        <>
+                            <TextField select fullWidth value={connectedNumbers[0]} variant='outlined' {...field}>
+                                <MenuItem value="newNumber" onClick={handleNewNumber}>New Phone Number</MenuItem>
+                                {connectedNumbers.length > 0 && connectedNumbers.map(number => (
+                                    <MenuItem key={number} value={number}>{number}</MenuItem>
+                                ))}
+
+                            </TextField>
+                        </>
+                    )
+                    }
+                /> :
+                <>
+                    <Controller
+                        control={control}
+                        name="fromPhoneNumber"
+                        label='From'
+                        render={() =>
+                            <PhoneNumberInput
+                                id="fromPhoneNumber"
+                                onChange={(e) => setValue('fromPhoneNumber', e)}
+                                value={getValues().fromPhoneNumber}
+                                label="From"
+                            />
+                        }
+                    />
+                    {connectedNumbers?.length > 0 && <Typography variant='caption' color='textSecondary' onClick={handleNewNumber}>+ Select from list</Typography>}
+                </>
+            }
+
             <Controller
                 control={control}
                 name="phoneNumber"
@@ -36,6 +78,7 @@ const NewMessageForm = ({ open, closeDialog }) => {
                         id="phoneNumber"
                         onChange={(e) => setValue('phoneNumber', e)}
                         value={getValues().phoneNumber}
+                        label="To"
                     />
                 }
             />

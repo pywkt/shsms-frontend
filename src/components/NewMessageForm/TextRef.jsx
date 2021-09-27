@@ -11,7 +11,7 @@ const TextfieldRef = (props, ref) => {
             {...props}
             inputRef={ref}
             fullWidth
-            label="Phone Number"
+            label={props.label || "Phone Number"}
             variant="outlined"
             name="phoneNumber"
             // inputProps={{ maxLength: value[0] === '1' ? 16 : 14 }}
