@@ -9,8 +9,8 @@ export const getMessages = async (toPhoneNumber, fromPhoneNumber) => {
 export const sendMessage = async (messageData) => {
     const response = await axios.post(`${process.env.REACT_APP_SMS_SERVER_URL}/messages`,
         {
-            phoneNumber: messageData.fromPhoneNumber,
             toPhoneNumber: messageData.toPhoneNumber,
+            phoneNumber: messageData.fromPhoneNumber,
             date: messageData.date,
             message: messageData.message,
             attachedMedia: messageData?.attachedMedia || null

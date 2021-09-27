@@ -89,8 +89,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
         setContacts(Object.entries(groupedContacts))
     }
 
-    console.log(contacts)
-
     return (
         <>
             <List disablePadding>
@@ -143,37 +141,13 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                         </div>
                     ))}
                 </PullToRefresh>
-
-                {/* <PullToRefresh onRefresh={handleRefresh} className={classes.pullContainer} pullingContent={' '}>
-                    {contacts && Object.values(contacts).map(item => (
-                        <Link key={item._id} to={`/messages/${item.phoneNumber}`} style={{ textDecoration: 'none' }}>
-                            <ListItem divider>
-                                <ListItemAvatar>
-                                    <Avatar />
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={item?.alias || formatPhoneNumber(item?.phoneNumber)}
-                                    primaryTypographyProps={{
-                                        color: 'textPrimary',
-                                        variant: 'h2'
-                                    }}
-                                    secondary={formatDistanceStrict(new Date(item?.lastMessageRecieved), new Date()) + ' ago'}
-                                    secondaryTypographyProps={{
-                                        color: 'textSecondary',
-                                        variant: 'caption'
-                                    }}
-                                />
-                            </ListItem>
-                        </Link>
-                    ))}
-                </PullToRefresh> */}
             </List>
 
             <Fab size='small' color='secondary' aria-label='new message' className={classes.newMessageButton} onClick={handleNewMessageDialog}>
                 <AddIcon className={classes.newMessageButtonIcon} />
             </Fab>
 
-            <NewMessageForm open={newMessageOpen} closeDialog={handleNewMessageDialog} />
+            <NewMessageForm open={newMessageOpen} closeDialog={handleNewMessageDialog} connectedNumbers={contacts?.length !== 0 && contacts.map(num => num[0])} />
         </>
     );
 };
