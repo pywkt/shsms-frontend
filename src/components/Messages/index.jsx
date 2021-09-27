@@ -10,7 +10,7 @@ import Link from '@material-ui/core/Link';
 import useStyles from './styles';
 import { getMessages } from '../../api/messages';
 
-const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket }) => {
+const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket, location }) => {
     const classes = useStyles({ phoneNumber });
     const settingsContext = useContext(SettingsContext);
     const messagesEndRef = useRef(null)
@@ -19,6 +19,8 @@ const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket
     const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
 
     const updateCallback = useCallback(() => {
+        const { state: locationState } = location
+
         const handleIncomingMessage = (data) => {
             if (!/(messages)/.test(window.location.pathname)) {
                 return
@@ -27,7 +29,7 @@ const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket
             const mostRecentMessage = data?.data.length - 1
 
             const dataToSend = {
-                phoneNumber,
+                phoneNumber: locationState.fromPhoneNumber,
                 media: data?.data[mostRecentMessage]?.media?.[0] || null
             }
 
@@ -36,13 +38,13 @@ const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket
         }
 
         const getAndUpdateMessages = async () => {
-            const allMessages = await getMessages(phoneNumber)
+            const allMessages = await getMessages(locationState?.toPhoneNumber, locationState?.fromPhoneNumber)
             setMessages(allMessages?.messages)
-            updateTitlebar(allMessages?.alias || formatPhoneNumber(phoneNumber))
+            updateTitlebar(allMessages?.alias || formatPhoneNumber(locationState?.fromPhoneNumber))
         }
 
         if (messages.length === 0) {
-            getAndUpdateMessages(phoneNumber)
+            getAndUpdateMessages()
         }
 
         const initSocket = () => {
@@ -53,7 +55,7 @@ const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket
         }
 
         initSocket()
-    }, [messages.length, phoneNumber, updateTitlebar, incomingMessageCallback, socket])
+    }, [messages.length, updateTitlebar, location, incomingMessageCallback, socket])
 
     useEffect(updateCallback, [])
 
@@ -67,7 +69,7 @@ const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket
                 {messages?.length !== 0 && messages?.map((message, index, arr) =>
                     <ListItem
                         key={message._id}
-                        className={message?.from === phoneNumber ? classes.recievedSMS : classes.sentSMS}
+                        className={message?.from === location?.state?.fromPhoneNumber ? classes.recievedSMS : classes.sentSMS}
                     >
                         {message?.media?.length > 0 &&
                             <ListItemText
@@ -82,12 +84,12 @@ const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket
 
                                             </Link> :
                                             <Link href={image}>
-                                                <img style={{ maxWidth: '100%', marginBottom: 5 }} src={message?.media[index]} alt={`${index} of ${arr?.length} from ${message?.phoneNumber}`} />
+                                                <img style={{ maxWidth: '100%', marginBottom: 5 }} src={message?.media[index]} alt={`${index} of ${arr?.length} from ${message?.to}`} />
                                             </Link>
                                         }</div>
                                 ))}
                                 primaryTypographyProps={{
-                                    className: message?.from === phoneNumber ? classes.recievedSMSTypography : classes.sentSMSTypography,
+                                    className: message?.from === location?.state?.toPhoneNumber ? classes.recievedSMSTypography : classes.sentSMSTypography,
                                     variant: 'body2'
                                 }}
                             >
@@ -97,7 +99,7 @@ const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket
                         {message?.body && <ListItemText
                             primary={message?.body}
                             primaryTypographyProps={{
-                                className: message?.from === phoneNumber ? classes.recievedSMSTypography : classes.sentSMSTypography,
+                                className: message?.from === location?.state?.toPhoneNumber ? classes.recievedSMSTypography : classes.sentSMSTypography,
                                 variant: 'body2'
                             }}
                         />}
@@ -106,7 +108,7 @@ const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket
             </List>
             <div ref={messagesEndRef} style={{ height: 0, visibility: 'hidden' }} />
 
-            <SendMessageForm phoneNumber={phoneNumber} />
+            <SendMessageForm phoneNumber={location?.state?.fromPhoneNumber} locationState={location?.state} />
         </>
     )
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { formatPhoneNumber } from 'react-phone-number-input';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -8,7 +9,7 @@ import { sendImage, sendMessage } from '../../api/messages';
 import SendButton from './SendButton';
 import useStyles from './styles';
 
-const SendMessageForm = ({ phoneNumber }) => {
+const SendMessageForm = ({ phoneNumber, locationState }) => {
     const classes = useStyles();
     const [loading, setLoading] = useState(false);
     const [inputType, setInputType] = useState('text');
@@ -16,7 +17,7 @@ const SendMessageForm = ({ phoneNumber }) => {
 
     const { control, handleSubmit, setValue } = useForm({
         defaultValues: {
-            phoneNumber,
+            phoneNumber: locationState?.fromPhoneNumber,
             photo: ''
         }
     });
@@ -32,7 +33,8 @@ const SendMessageForm = ({ phoneNumber }) => {
 
         if (inputType === 'text') {
             const updatedData = {
-                phoneNumber,
+                fromPhoneNumber: locationState?.fromPhoneNumber,
+                toPhoneNumber: locationState?.toPhoneNumber,
                 date: new Date().toISOString(),
                 message: data.message
             }
@@ -48,11 +50,13 @@ const SendMessageForm = ({ phoneNumber }) => {
 
             if (imageUrl?.status === 200) {
                 const updatedDataWithImage = {
-                    phoneNumber,
+                    fromPhoneNumber: locationState?.fromPhoneNumber,
+                    toPhoneNumber: locationState?.toPhoneNumber,
                     date: new Date().toISOString(),
                     message: '',
                     attachedMedia: [imageUrl?.imageUrl] || null
                 }
+
                 const sendStatus = await sendMessage(updatedDataWithImage)
 
                 if (sendStatus?.status === 200) {
@@ -87,6 +91,7 @@ const SendMessageForm = ({ phoneNumber }) => {
                                         fullWidth
                                         size='small'
                                         label='Message'
+                                        placeholder={`Sending from ${formatPhoneNumber(locationState?.toPhoneNumber)}`}
                                         variant='outlined'
                                         InputProps={{
                                             endAdornment: <SendButton cb={handleImageCallback} loading={loading} />
