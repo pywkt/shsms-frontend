@@ -13,7 +13,7 @@ import AddIcon from '@material-ui/icons/Add';
 import NewMessageForm from "../NewMessageForm";
 import useStyles from './styles';
 import { getContacts } from '../../api/contacts';
-import { groupArrayOfObjects } from "../../helpers/sorting";
+import { groupArrayOfObjects, sortArrayOfObjects } from "../../helpers/sorting";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
@@ -89,6 +89,8 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
         setContacts(Object.entries(groupedContacts))
     }
 
+    console.log(contacts)
+
     return (
         <>
             <List disablePadding>
@@ -100,7 +102,7 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                             <ListItem disableGutters button onClick={() => handleOpenList(index)} className={classes.collapsablePanel}>
                                 <ListItemText
                                     primary={formatPhoneNumber(item?.[0])}
-                                    primaryTypographyProps={{ color: 'textPrimary', variant: 'h3' }}
+                                    primaryTypographyProps={{ color: 'textPrimary', variant: 'body2' }}
                                 />
                                 {settingsContext.settings?.openLists?.includes(index) ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
@@ -110,7 +112,7 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                                 <List key={index} dense disablePadding>
 
                                     {/* number that sent the text */}
-                                    {item?.[1]?.map(itemContact => (
+                                    {sortArrayOfObjects(item?.[1], 'lastMessageRecieved', true).map(itemContact => (
                                         <Link
                                             key={itemContact?._id}
                                             to={`/messages/${itemContact.toPhoneNumber}/${itemContact.phoneNumber}`}
@@ -123,7 +125,7 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                                                 </ListItemAvatar>
                                                 <ListItemText
                                                     primary={itemContact?.alias || formatPhoneNumber(itemContact?.phoneNumber)}
-                                                    primaryTypographyProps={{ color: 'textSecondary', variant: 'h4' }}
+                                                    primaryTypographyProps={{ color: 'textSecondary', variant: 'h3' }}
                                                     secondary={formatDistanceStrict(new Date(itemContact?.lastMessageRecieved), new Date()) + ' ago'}
                                                     secondaryTypographyProps={{
                                                         color: 'textSecondary',
