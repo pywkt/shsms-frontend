@@ -33,7 +33,7 @@ const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket
                 media: data?.data[mostRecentMessage]?.media?.[0] || null
             }
 
-            incomingMessageCallback(dataToSend)
+            incomingMessageCallback(dataToSend, 'messages')
             setMessages(data?.data)
         }
 

@@ -10,15 +10,15 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from '@material-ui/core/Avatar';
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add';
-import NewMessageForm from "../NewMessageForm";
 import useStyles from './styles';
-import { getContacts } from '../../api/contacts';
-import { groupArrayOfObjects, sortArrayOfObjects } from "../../helpers/sorting";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import NewMessageForm from "../NewMessageForm";
+import { getContacts } from '../../api/contacts';
 import { updateSettings } from "../../api/settings";
+import { groupArrayOfObjects, sortArrayOfObjects } from "../../helpers/sorting";
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const classes = useStyles();
@@ -63,7 +63,7 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                 return
             }
 
-            incomingMessageCallback(data)
+            incomingMessageCallback(data, 'contacts')
             getAndSetContacts()
         }
 

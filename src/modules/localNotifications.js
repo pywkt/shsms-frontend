@@ -4,9 +4,9 @@ import BackgroundMode from 'cordova-plugin-advanced-background-mode';
 
 const isWeb = Capacitor.getPlatform() === 'web';
 
-export const createNotificationChannel = async () => {
+export const createNotificationChannel = async (specData) => {
     return LocalNotifications.createChannel({
-        id: 'smsNotificationChannel',
+        id: specData?.phoneNumber.replace(/[^0-9]/g, ''),
         name: 'New shSMS Message',
         importance: 5,
         description: 'New shSMS Message',
@@ -16,20 +16,12 @@ export const createNotificationChannel = async () => {
     })
 }
 
-export const scheduleLocalNotification = async (data) => {
+export const scheduleLocalNotification = async (data, view) => {
     let screenIsOff;
 
     if (!isWeb) {
-        LocalNotifications.requestPermissions()
-        BackgroundMode.setDefaults({
-            title: 'shSMS',
-            text: 'shSMS has started and is running in the background',
-            hidden: true,
-            smallIcon: 'baseline_message_24',
-            // silent: true            
-        })
-
-        BackgroundMode.enable();
+        let specData;
+        view === 'contacts' ? specData = data[data.length - 1] : specData = data
 
         BackgroundMode.isScreenOff(off => {
             if (off) {
@@ -41,22 +33,22 @@ export const scheduleLocalNotification = async (data) => {
         const appInBackground = BackgroundMode.isActive()
 
         if (appInBackground || screenIsOff) {
-            await createNotificationChannel();
+            await createNotificationChannel(specData);
 
             LocalNotifications.schedule({
                 notifications: [
                     {
-                        title: data?.[0]?.alias || data?.[0]?.phoneNumber,
+                        title: specData?.alias || specData?.phoneNumber,
                         body: "New Message | shSMS",
-                        id: 0,
+                        id: specData?.phoneNumber.replace(/[^0-9]/g, ''),
                         schedule: {
                             at: new Date(Date.now() + 2000),
                             allowWhileIdle: true
                         },
                         sound: 'message_tone.wav',
-                        attachments: data?.media,
+                        attachments: specData?.media,
                         extra: null,
-                        channelId: 'smsNotificationChannel',
+                        channelId: specData?.phoneNumber.replace(/[^0-9]/g, ''),
                         smallIcon: 'baseline_message_24',
                         largeIcon: 'baseline_message_24',
                         iconColor: '#e090b8',

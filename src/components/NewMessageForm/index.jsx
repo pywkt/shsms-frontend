@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { useForm, Controller } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -6,16 +7,22 @@ import Typography from '@material-ui/core/Typography';
 import DialogForm from '../DialogForm';
 import PhoneNumberInput from './PhoneNumberInput';
 import { sendMessage } from '../../api/messages';
+import { checkPermissionContacts } from '../../modules/contacts';
+import { parsePhoneNumber } from 'react-phone-number-input';
 
 const NewMessageForm = ({ open, closeDialog, connectedNumbers }) => {
     const { control, handleSubmit, getValues, setValue } = useForm();
     const [loading, setLoading] = useState(false);
     const [newNumberSelected, setNewNumberSelected] = useState(false);
+    const [showDeviceContacts, setShowDeviceContacts] = useState(false);
+    const [numbersFromContacts, setNumbersFromContacts] = useState('')
+
+    const isWeb = Capacitor.getPlatform() === 'web'
 
     const submitNewMessageForm = async (data) => {
         setLoading(true)
         const updatedData = {
-            fromPhoneNumber: data.phoneNumber,
+            fromPhoneNumber: !showDeviceContacts ? data.phoneNumber : parsePhoneNumber(data.fromContacts.replace(/[^0-9,+]/g, ''))?.number,
             toPhoneNumber: data.fromPhoneNumber,
             date: new Date().toISOString(),
             message: data.message
@@ -30,6 +37,13 @@ const NewMessageForm = ({ open, closeDialog, connectedNumbers }) => {
     }
 
     const handleNewNumber = () => setNewNumberSelected(prev => !prev)
+
+    const handleNewNumberFromContacts = async () => {
+        const cb = (contactData) => setNumbersFromContacts(contactData)
+        await checkPermissionContacts(cb)
+
+        setShowDeviceContacts(prev => !prev)
+    }
 
     const SendNewMessageForm = () =>
         <>
@@ -69,18 +83,39 @@ const NewMessageForm = ({ open, closeDialog, connectedNumbers }) => {
                 </>
             }
 
-            <Controller
-                control={control}
-                name="phoneNumber"
-                render={() =>
-                    <PhoneNumberInput
-                        id="phoneNumber"
-                        onChange={(e) => setValue('phoneNumber', e)}
-                        value={getValues().phoneNumber}
-                        label="To"
-                    />
-                }
-            />
+            {showDeviceContacts === true ?
+                <Controller
+                    control={control}
+                    name="fromContacts"
+                    defaultValue='Select a contact'
+                    render={({ field }) => (
+                        <>
+                            <TextField select fullWidth value="" variant="outlined" {...field}>
+                                <MenuItem value="Select a contact">Select a contact</MenuItem>
+                                {numbersFromContacts?.length > 0 && numbersFromContacts.map(contact => (
+                                    <MenuItem key={contact?.id} value={contact.phoneNumbers[0].value} onClick={setValue('phoneNumber', contact.phoneNumbers[0].value)}>{contact.displayName}</MenuItem>
+                                ))}
+
+                            </TextField>
+                        </>
+                    )}
+                /> :
+
+                <Controller
+                    control={control}
+                    name="phoneNumber"
+                    render={() =>
+                        <PhoneNumberInput
+                            id="phoneNumber"
+                            onChange={(e) => setValue('phoneNumber', e)}
+                            value={getValues().phoneNumber}
+                            label="To"
+                        />
+                    }
+                />
+            }
+
+            {!isWeb && <Typography variant='caption' color='textSecondary' onClick={handleNewNumberFromContacts}>{showDeviceContacts ? "Enter number manually" : "+ Select from contacts"}</Typography>}
 
             <Controller
                 control={control}
