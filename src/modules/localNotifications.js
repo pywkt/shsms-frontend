@@ -29,7 +29,7 @@ export const scheduleLocalNotification = async (data) => {
             // silent: true            
         })
 
-        BackgroundMode.enable();
+        // BackgroundMode.enable();
 
         BackgroundMode.isScreenOff(off => {
             if (off) {

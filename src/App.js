@@ -10,6 +10,8 @@ import { getSettings } from './api/getSettings';
 import Loader from './components/Loader';
 import { SettingsContext } from './context/settingsContext';
 import { scheduleLocalNotification } from './modules/localNotifications';
+import BackgroundMode from 'cordova-plugin-advanced-background-mode';
+import { Capacitor } from '@capacitor/core';
 
 const App = ({ socket }) => {
   const [loading, setLoading] = useState(true);
@@ -19,6 +21,8 @@ const App = ({ socket }) => {
   const updateTitlebarLabel = (newValue) => newValue !== titlebarLabel && setTitlebarLabel(newValue)
 
   const initApp = useCallback(() => {
+    const isWeb = Capacitor.getPlatform() === 'web';
+    !isWeb && BackgroundMode.enable()
     const callGetSettings = async () => {
       const userSettings = await getSettings()
       const getTheme = await themeList.find(i => i.slug === userSettings.theme && i)
