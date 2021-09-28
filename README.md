@@ -43,9 +43,22 @@ If there's something vital I left out in the documentation, send an email to: `3
 
 If there's something wrong with the app, or a feature worth talking about, submit a ticket for it through Github and it will be addressed
 
+### September 28, 2021 - v1.1.0 Release
+   * Added support for multiple Twilio numbers to be connected.
+   * Added ability to import number from device's saved contacts.
+   * Swipe down to refresh (contacts page only).
+   * Tightened up notifications. Should be much more reliable now.
+
 ### To-Do:
-   * Ability to select from native contacts for new message.
-   * Add multiple Twilio phone numbers to same app instance.
-   * Send text with MMS/multiple MMS in one message.
-   * Swipe down to refresh.
-   * Encrypt/decrypt messages to and from the database
+   * ~~Ability to select from native contacts for new message.~~
+   * ~~Add multiple Twilio phone numbers to same app instance.~~
+   * ~~Send text with MMS/multiple MMS in one message.~~
+   * ~~Swipe down to refresh.~~
+   * Encrypt/decrypt messages to and from the database (full self-hosting may solve this. tbd.).
+   * Make top-level (owned) phone numbers draggable/sortable.
+   * Overall code cleanup. lint, rename variables etc.
+   * Add visual indicators when sending media other than images.
+   * Update docs for setting up without Heroku/mLab (still testing).
+   * Images/colors assignable to contacts.
+   * Rename/create alias for your owned numbers.
+   * Add in-app version checking.
