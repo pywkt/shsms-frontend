@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { scheduleLocalNotification } from './modules/localNotifications';
+import { initBackgroundMode } from './modules/backgroundMode';
 import { Router } from '@reach/router';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -9,7 +11,6 @@ import { themeList } from './data/themeList';
 import { getSettings } from './api/getSettings';
 import Loader from './components/Loader';
 import { SettingsContext } from './context/settingsContext';
-import { scheduleLocalNotification } from './modules/localNotifications';
 
 const App = ({ socket }) => {
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ const App = ({ socket }) => {
     const callGetSettings = async () => {
       const userSettings = await getSettings()
       const getTheme = await themeList.find(i => i.slug === userSettings.theme && i)
-      const contextToUpdate = { ...userSettings, theme: getTheme, _id: userSettings._id }
+      const contextToUpdate = { ...userSettings, theme: getTheme, _id: userSettings._id, openLists: userSettings?.openLists }
 
       if (contextToUpdate.theme.theme !== settingsContext.settings.theme) {
         settingsContext.setSettings(contextToUpdate)
@@ -31,13 +32,14 @@ const App = ({ socket }) => {
       setLoading(false)
     }
 
-    callGetSettings()
+    callGetSettings();
+    initBackgroundMode();
   }, [settingsContext])
 
   useEffect(initApp, [])
 
-  const handleIncomingMessage = async (data) => {
-    await scheduleLocalNotification(data)
+  const handleIncomingMessage = async (data, view) => {
+    await scheduleLocalNotification(data, view)
     return
   }
 
@@ -49,8 +51,17 @@ const App = ({ socket }) => {
           <ThemeProvider theme={settingsContext?.settings?.theme?.theme}>
             <HeaderBar label={titlebarLabel}>
               <Router>
-                <ContactList socket={socket} path='/' updateTitlebar={updateTitlebarLabel} incomingMessageCallback={(data) => handleIncomingMessage(data)} />
-                <Messages socket={socket} path='/messages/:phoneNumber' updateTitlebar={updateTitlebarLabel} incomingMessageCallback={(data) => handleIncomingMessage(data)} />
+                <ContactList
+                  socket={socket} path='/'
+                  updateTitlebar={updateTitlebarLabel}
+                  incomingMessageCallback={(data, view) => handleIncomingMessage(data, view)}
+                />
+                <Messages
+                  socket={socket}
+                  path='/messages/:toPhoneNumber/:fromPhoneNumber'
+                  updateTitlebar={updateTitlebarLabel}
+                  incomingMessageCallback={(data, view) => handleIncomingMessage(data, view)}
+                />
               </Router>
             </HeaderBar>
           </ThemeProvider>

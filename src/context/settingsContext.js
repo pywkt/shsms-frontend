@@ -3,7 +3,7 @@ import { themeList } from '../data/themeList';
 export const SettingsContext = createContext();
 
 export const SettingsProvider = ({ children }) => {
-    const [settings, setSettings] = useState({ theme: themeList[0].theme, showImageSwitch: false });
+    const [settings, setSettings] = useState({ theme: themeList[0].theme, showImageSwitch: false, openLists: [] });
 
     return (
         <SettingsContext.Provider
