@@ -6,12 +6,13 @@ export const initBackgroundMode = () => {
 
     if (!isWeb) {
         BackgroundMode.enable();
+        BackgroundMode.overrideBackButton()
         BackgroundMode.setDefaults({
             title: 'shSMS',
             text: 'shSMS has started and is running in the background',
-            hidden: true,
             smallIcon: 'baseline_message_24',
-            // silent: true            
+            hidden: true,
+            // silent: true
         })
     }
 }

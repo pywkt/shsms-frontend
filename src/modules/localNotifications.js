@@ -2,6 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import BackgroundMode from 'cordova-plugin-advanced-background-mode';
 
+let screenIsOff;
 const isWeb = Capacitor.getPlatform() === 'web';
 
 export const createNotificationChannel = async (specData) => {
@@ -17,8 +18,6 @@ export const createNotificationChannel = async (specData) => {
 }
 
 export const scheduleLocalNotification = async (data, view) => {
-    let screenIsOff;
-
     if (!isWeb) {
         let specData;
         view === 'contacts' ? specData = data[data.length - 1] : specData = data
@@ -34,6 +33,7 @@ export const scheduleLocalNotification = async (data, view) => {
 
         if (appInBackground || screenIsOff) {
             await createNotificationChannel(specData);
+            BackgroundMode.moveToForeground()
 
             LocalNotifications.schedule({
                 notifications: [
