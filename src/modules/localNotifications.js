@@ -2,7 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import BackgroundMode from 'cordova-plugin-advanced-background-mode';
 
-let screenIsOff;
+const setTitle = (title) => document.title = title
 const isWeb = Capacitor.getPlatform() === 'web';
 
 export const createNotificationChannel = async (specData) => {
@@ -22,20 +22,20 @@ export const scheduleLocalNotification = async (data, view) => {
         let specData;
         view === 'contacts' ? specData = data[data.length - 1] : specData = data
 
-        BackgroundMode.isScreenOff(off => {
-            if (off) {
-                screenIsOff = off
+        BackgroundMode.isScreenOff(async off => {
+            console.log('isScreenOff > off:', off)
+            if (off === true) {
+                await setTitle('appInBackground')
                 BackgroundMode.wakeUp()
             }
         })
-        
-        const appInBackground = BackgroundMode.isActive()
 
-        if (appInBackground || screenIsOff) {
+        if (document.title === 'appInBackground') {
+            document.title = 'shSMS'
+
             await createNotificationChannel(specData);
-            BackgroundMode.moveToForeground()
 
-            LocalNotifications.schedule({
+            await LocalNotifications.schedule({
                 notifications: [
                     {
                         title: specData?.alias || specData?.phoneNumber,
@@ -59,6 +59,5 @@ export const scheduleLocalNotification = async (data, view) => {
                 ]
             })
         }
-
     }
 }
