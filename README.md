@@ -37,7 +37,7 @@ Please note: This app makes several assumptions about you as a user. First and f
 
 I have created a pretty extensive guide on gitbook, it seems very daunting at first, but I tried to split it up in to several short sections and explain as much as possible. Even things you might not really care about, but hey, this whole process is probably new to a lot of people so I figured I'd give as much help as I can.
 
-[https://pyewacket-github.gitbook.io/shsms/](https://pyewacket-github.gitbook.io/shsms/)
+[https://pywkt.gitbook.io/shsms/](https://pywkt.gitbook.io/shsms/)
 
 ### Issues
 
