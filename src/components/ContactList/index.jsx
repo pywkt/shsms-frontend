@@ -40,11 +40,9 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
         if (settingsContext.settings?.openLists?.indexOf(listIndex) === -1) {
             callUpdateSettings([...settingsContext.settings?.openLists, listIndex])
         } else {
-            const updatedOpenLists = settingsContext.settings?.openLists
-            const itemToRemove = settingsContext.settings?.openLists?.indexOf(listIndex)
-            updatedOpenLists.splice(itemToRemove, 1)
-
-            callUpdateSettings(updatedOpenLists)
+            const allOpenLists = settingsContext.settings?.openLists
+            const updatedListArray = allOpenLists.filter(item => item !== listIndex)
+            callUpdateSettings(updatedListArray)
         }
     }
 
@@ -97,15 +95,15 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                     {contacts && contacts?.map((item, index) => (
                         <div key={item?.[0]}>
 
-                            <ListItem disableGutters button onClick={() => handleOpenList(index)} className={classes.collapsablePanel}>
+                            <ListItem disableGutters button onClick={() => handleOpenList(item?.[0])} className={classes.collapsablePanel}>
                                 <ListItemText
                                     primary={formatPhoneNumber(item?.[0])}
                                     primaryTypographyProps={{ color: 'textPrimary', variant: 'body2' }}
                                 />
-                                {settingsContext.settings?.openLists?.includes(index) ? <ExpandLess /> : <ExpandMore />}
+                                {settingsContext.settings?.openLists?.includes(item[0]) ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
 
-                            <Collapse in={settingsContext.settings?.openLists?.indexOf(index) !== -1} timeout="auto" unmountOnExit>
+                            <Collapse in={settingsContext.settings?.openLists?.indexOf(item?.[0]) !== -1} timeout="auto" unmountOnExit>
                                 <List key={index} dense disablePadding>
 
                                     {/* number that sent the text */}
