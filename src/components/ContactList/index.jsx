@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import List from '@material-ui/core/List';
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add';
@@ -8,10 +8,12 @@ import { getContacts } from '../../api/contacts';
 import { groupArrayOfObjects } from "../../helpers/sorting";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import ConnectedNumbersList from "./ConnectedNumbersList";
-
+import { SettingsContext } from "../../context/settingsContext";
+import { updateSettings } from "../../api/settings";
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const classes = useStyles();
+    const settingsContext = useContext(SettingsContext)
     const [contacts, setContacts] = useState([])
     const [newMessageOpen, setNewMessageOpen] = useState(false);
     const handleNewMessageDialog = () => setNewMessageOpen((prev) => !prev);
@@ -22,8 +24,9 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
         const getAndSetContacts = async () => {
             const contacts02 = await getContacts();
             const groupedContacts = groupArrayOfObjects(contacts02, 'toPhoneNumber')
+            const sortOrder = settingsContext.settings.connectedNumbersOrder
 
-            setContacts(Object.entries(groupedContacts))
+            setContacts(Object.entries(groupedContacts).sort((a, b) => sortOrder.indexOf(a[0]) - sortOrder.indexOf(b[0])))
         }
 
         const handleIncomingMessage = async (data) => {
@@ -46,7 +49,7 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
             getAndSetContacts()
             initSocket()
         }
-    }, [contacts.length, updateTitlebar, incomingMessageCallback, socket])
+    }, [contacts.length, updateTitlebar, incomingMessageCallback, socket, settingsContext])
 
     useEffect(updateCallback, [])
 
@@ -69,22 +72,27 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
 
     const onDragUpdate = useCallback(() => { }, []);
 
-    const onDragEnd = useCallback(
-        (result) => {
-            if (!result.destination) {
-                return;
+    const onDragEnd = useCallback((result) => {
+        if (!result.destination) { return; }
+
+        const newOrder = reorder(contacts, result.source.index, result.destination.index);
+
+        setContacts(newOrder);
+
+        const updatedContactOrder = newOrder.map(item => item[0]);
+
+        const updateDBandContext = async () => {
+            try {
+                await updateSettings({ ...settingsContext.settings, connectedNumbersOrder: updatedContactOrder })
+                settingsContext.setSettings({ ...settingsContext.settings, connectedNumbersOrder: updatedContactOrder })
+            } catch (err) {
+                throw err
             }
+        }
 
-            const newItems = reorder(
-                contacts,
-                result.source.index,
-                result.destination.index
-            );
-
-            setContacts(newItems);
-            // update settingsContext to store the order here
-        },
-        [contacts]
+        updateDBandContext()
+    },
+        [contacts, settingsContext]
     );
 
     return (
