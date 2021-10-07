@@ -19,6 +19,7 @@ import NewMessageForm from "../NewMessageForm";
 import { getContacts } from '../../api/contacts';
 import { updateSettings } from "../../api/settings";
 import { groupArrayOfObjects, sortArrayOfObjects } from "../../helpers/sorting";
+import { useTheme } from '@material-ui/core'
 import {
     DragDropContext,
     Draggable,
@@ -28,6 +29,7 @@ import {
 
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
+    const theme = useTheme();
     const classes = useStyles();
     const settingsContext = useContext(SettingsContext)
     const [contacts, setContacts] = useState([])
@@ -94,14 +96,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
         setContacts(Object.entries(groupedContacts))
     }
 
-    // const getItems = async (count) => {
-    //     const contacts02 = await getContacts();
-    //     const groupedContacts = groupArrayOfObjects(contacts02, 'toPhoneNumber')
-
-    //     setContacts(Object.entries(groupedContacts))
-    //     return Object.entries(groupedContacts)
-    // };
-
     const reorder = (list, startIndex, endIndex) => {
         const result = Array.from(list);
         const [removed] = result.splice(startIndex, 1);
@@ -110,26 +104,12 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
         return result;
     };
 
-    const getItemStyle = (draggableStyle, isDragging) => ({
-        userSelect: "none",
-        background: isDragging ? "lightgreen" : "grey",
-        ...draggableStyle
-    });
-
-    const getListStyle = (isDraggingOver) => ({
-        background: isDraggingOver ? "lightblue" : "lightgrey",
-        // width: 250
-    });
-
-    // const [items, setItems] = useState(getItems(10));
-
     const onDragStart = useCallback(() => { }, []);
 
     const onDragUpdate = useCallback(() => { }, []);
 
     const onDragEnd = useCallback(
         (result) => {
-            console.log("TEST", result);
             if (!result.destination) {
                 return;
             }
@@ -140,15 +120,16 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                 result.destination.index
             );
 
-            console.log('newItems:', newItems)
-
             setContacts(newItems);
             // update settingsContext to store the order here
         },
         [contacts]
     );
 
-    console.log('contacts:', contacts)
+    const updateStyle = (isDragging) => ({
+        border: isDragging && `1px dashed ${theme.palette.secondary.dark}`,
+        padding: isDragging && theme.spacing(1)
+    })
 
     return (
         <>
@@ -158,93 +139,75 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                 onDragUpdate={onDragUpdate}
             >
                 <Droppable droppableId="droppable">
-                    {(provided, snapshot) => (
-                        <div
-                            ref={provided.innerRef}
-                            style={getListStyle(snapshot.isDraggingOver)}
-                        >
-                            {contacts && contacts.map((item, index) => (
-                                <Draggable key={item?.[0]} draggableId={item[0]} index={index}>
-                                    {
-                                        // tslint:disable-next-line:no-shadowed-variable
-                                        (provided, snapshot) => (
-                                            // <div>
+                    {(provided) => (
+                        <div ref={provided.innerRef}>
+                            <List disablePadding>
+                                {contacts && contacts.map((item, index) => (
+                                    <Draggable key={item?.[0]} draggableId={item[0]} index={index}>
+                                        {(provided, snapshot) => (
                                             <div
                                                 ref={provided.innerRef}
-                                                style={getItemStyle(
-                                                    provided.draggableStyle,
-                                                    snapshot.isDragging
-                                                )}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
                                             >
-                                                {item?.[0]}
+                                                <div key={item?.[0]} style={{
+                                                    ...updateStyle(snapshot.isDragging),
+                                                    background: theme.palette.background.default,
+                                                }}>
+
+                                                    <ListItem disableGutters button onClick={() => handleOpenList(item?.[0])} className={classes.collapsablePanel}>
+                                                        <ListItemText
+                                                            primary={formatPhoneNumber(item?.[0])}
+                                                            primaryTypographyProps={{ color: 'textPrimary', variant: 'body2' }}
+                                                        />
+                                                        {settingsContext.settings?.openLists?.includes(item[0]) ? <ExpandLess /> : <ExpandMore />}
+                                                    </ListItem>
+
+                                                    <Collapse in={settingsContext.settings?.openLists?.indexOf(item?.[0]) !== -1} timeout="auto" unmountOnExit>
+                                                        <List key={index} dense disablePadding>
+
+                                                            {/* number that sent the text */}
+                                                            {sortArrayOfObjects(item?.[1], 'lastMessageRecieved', true).map(itemContact => (
+                                                                <Link
+                                                                    key={itemContact?._id}
+                                                                    to={`/messages/${itemContact.toPhoneNumber}/${itemContact.phoneNumber}`}
+                                                                    state={{ toPhoneNumber: itemContact.toPhoneNumber, fromPhoneNumber: itemContact.phoneNumber }}
+                                                                    style={{ textDecoration: 'none' }}
+                                                                >
+                                                                    <ListItem divider className={classes.fromNumberListItem}>
+                                                                        <ListItemAvatar>
+                                                                            <Avatar className={classes.contactsListAvatar} />
+                                                                        </ListItemAvatar>
+                                                                        <ListItemText
+                                                                            primary={itemContact?.alias || formatPhoneNumber(itemContact?.phoneNumber)}
+                                                                            primaryTypographyProps={{ color: 'textSecondary', variant: 'h3' }}
+                                                                            secondary={formatDistanceStrict(new Date(itemContact?.lastMessageRecieved), new Date()) + ' ago'}
+                                                                            secondaryTypographyProps={{
+                                                                                color: 'textSecondary',
+                                                                                variant: 'caption'
+                                                                            }}
+                                                                        />
+                                                                    </ListItem>
+                                                                </Link>
+                                                            ))}
+                                                        </List>
+                                                    </Collapse>
+                                                </div>
                                             </div>
-                                            /* {provided.placeholder} */
-                                            // </div>
-                                        )
-                                    }
-                                </Draggable>
-                            ))}
+                                        )}
+                                    </Draggable>
+                                ))}
+                            </List>
                             {provided.placeholder}
                         </div>
                     )}
                 </Droppable>
             </DragDropContext>
 
-
-
-
-
-
-            <List disablePadding>
+            {/* <List disablePadding>
                 <PullToRefresh onRefresh={handleRefresh} className={classes.pullContainer} pullingContent={' '}>
-                    {/* receiving number */}
-                    {contacts && contacts?.map((item, index) => (
-                        <div key={item?.[0]}>
-
-                            <ListItem disableGutters button onClick={() => handleOpenList(item?.[0])} className={classes.collapsablePanel}>
-                                <ListItemText
-                                    primary={formatPhoneNumber(item?.[0])}
-                                    primaryTypographyProps={{ color: 'textPrimary', variant: 'body2' }}
-                                />
-                                {settingsContext.settings?.openLists?.includes(item[0]) ? <ExpandLess /> : <ExpandMore />}
-                            </ListItem>
-
-                            <Collapse in={settingsContext.settings?.openLists?.indexOf(item?.[0]) !== -1} timeout="auto" unmountOnExit>
-                                <List key={index} dense disablePadding>
-
-                                    {/* number that sent the text */}
-                                    {sortArrayOfObjects(item?.[1], 'lastMessageRecieved', true).map(itemContact => (
-                                        <Link
-                                            key={itemContact?._id}
-                                            to={`/messages/${itemContact.toPhoneNumber}/${itemContact.phoneNumber}`}
-                                            state={{ toPhoneNumber: itemContact.toPhoneNumber, fromPhoneNumber: itemContact.phoneNumber }}
-                                            style={{ textDecoration: 'none' }}
-                                        >
-                                            <ListItem divider className={classes.fromNumberListItem}>
-                                                <ListItemAvatar>
-                                                    <Avatar className={classes.contactsListAvatar} />
-                                                </ListItemAvatar>
-                                                <ListItemText
-                                                    primary={itemContact?.alias || formatPhoneNumber(itemContact?.phoneNumber)}
-                                                    primaryTypographyProps={{ color: 'textSecondary', variant: 'h3' }}
-                                                    secondary={formatDistanceStrict(new Date(itemContact?.lastMessageRecieved), new Date()) + ' ago'}
-                                                    secondaryTypographyProps={{
-                                                        color: 'textSecondary',
-                                                        variant: 'caption'
-                                                    }}
-                                                />
-                                            </ListItem>
-
-                                        </Link>
-                                    ))}
-                                </List>
-                            </Collapse>
-                        </div>
-                    ))}
                 </PullToRefresh>
-            </List>
+            </List> */}
 
             <Fab size='small' color='secondary' aria-label='new message' className={classes.newMessageButton} onClick={handleNewMessageDialog}>
                 <AddIcon className={classes.newMessageButtonIcon} />
