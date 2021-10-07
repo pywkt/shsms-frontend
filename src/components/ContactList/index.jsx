@@ -103,7 +103,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                                 {settingsContext.settings?.openLists?.includes(item[0]) ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
 
-
                             <Collapse in={settingsContext.settings?.openLists?.indexOf(item?.[0]) !== -1} timeout="auto" unmountOnExit>
                                 <List key={index} dense disablePadding>
 
@@ -127,7 +126,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                                                         color: 'textSecondary',
                                                         variant: 'caption'
                                                     }}
-
                                                 />
                                             </ListItem>
 
@@ -135,7 +133,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                                     ))}
                                 </List>
                             </Collapse>
-
                         </div>
                     ))}
                 </PullToRefresh>
