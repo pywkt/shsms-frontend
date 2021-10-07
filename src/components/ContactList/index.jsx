@@ -19,6 +19,13 @@ import NewMessageForm from "../NewMessageForm";
 import { getContacts } from '../../api/contacts';
 import { updateSettings } from "../../api/settings";
 import { groupArrayOfObjects, sortArrayOfObjects } from "../../helpers/sorting";
+import {
+    DragDropContext,
+    Draggable,
+    Droppable,
+    DropResult
+} from "react-beautiful-dnd";
+
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const classes = useStyles();
@@ -87,8 +94,109 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
         setContacts(Object.entries(groupedContacts))
     }
 
+    // const getItems = async (count) => {
+    //     const contacts02 = await getContacts();
+    //     const groupedContacts = groupArrayOfObjects(contacts02, 'toPhoneNumber')
+
+    //     setContacts(Object.entries(groupedContacts))
+    //     return Object.entries(groupedContacts)
+    // };
+
+    const reorder = (list, startIndex, endIndex) => {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+
+        return result;
+    };
+
+    const getItemStyle = (draggableStyle, isDragging) => ({
+        userSelect: "none",
+        background: isDragging ? "lightgreen" : "grey",
+        ...draggableStyle
+    });
+
+    const getListStyle = (isDraggingOver) => ({
+        background: isDraggingOver ? "lightblue" : "lightgrey",
+        // width: 250
+    });
+
+    // const [items, setItems] = useState(getItems(10));
+
+    const onDragStart = useCallback(() => { }, []);
+
+    const onDragUpdate = useCallback(() => { }, []);
+
+    const onDragEnd = useCallback(
+        (result) => {
+            console.log("TEST", result);
+            if (!result.destination) {
+                return;
+            }
+
+            const newItems = reorder(
+                contacts,
+                result.source.index,
+                result.destination.index
+            );
+
+            console.log('newItems:', newItems)
+
+            setContacts(newItems);
+            // update settingsContext to store the order here
+        },
+        [contacts]
+    );
+
+    console.log('contacts:', contacts)
+
     return (
         <>
+            <DragDropContext
+                onDragEnd={onDragEnd}
+                onDragStart={onDragStart}
+                onDragUpdate={onDragUpdate}
+            >
+                <Droppable droppableId="droppable">
+                    {(provided, snapshot) => (
+                        <div
+                            ref={provided.innerRef}
+                            style={getListStyle(snapshot.isDraggingOver)}
+                        >
+                            {contacts && contacts.map((item, index) => (
+                                <Draggable key={item?.[0]} draggableId={item[0]} index={index}>
+                                    {
+                                        // tslint:disable-next-line:no-shadowed-variable
+                                        (provided, snapshot) => (
+                                            // <div>
+                                            <div
+                                                ref={provided.innerRef}
+                                                style={getItemStyle(
+                                                    provided.draggableStyle,
+                                                    snapshot.isDragging
+                                                )}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                            >
+                                                {item?.[0]}
+                                            </div>
+                                            /* {provided.placeholder} */
+                                            // </div>
+                                        )
+                                    }
+                                </Draggable>
+                            ))}
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
+
+
+
+
+
+
             <List disablePadding>
                 <PullToRefresh onRefresh={handleRefresh} className={classes.pullContainer} pullingContent={' '}>
                     {/* receiving number */}
