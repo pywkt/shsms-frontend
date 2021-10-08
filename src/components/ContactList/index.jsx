@@ -53,13 +53,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
 
     useEffect(updateCallback, [])
 
-    // const handleRefresh = async () => {
-    //     const contacts03 = await getContacts();
-    //     const groupedContacts = groupArrayOfObjects(contacts03, 'toPhoneNumber')
-
-    //     setContacts(Object.entries(groupedContacts))
-    // }
-
     const reorder = (list, startIndex, endIndex) => {
         const result = Array.from(list);
         const [removed] = result.splice(startIndex, 1);
@@ -101,6 +94,7 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                 onDragEnd={onDragEnd}
                 onDragStart={onDragStart}
                 onDragUpdate={onDragUpdate}
+                style={{ backgroundColor: 'pink', height: '70vh' }}
             >
                 <Droppable droppableId="droppable">
                     {(provided) => (
@@ -113,11 +107,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                     )}
                 </Droppable>
             </DragDropContext>
-
-            {/* <List disablePadding>
-                <PullToRefresh onRefresh={handleRefresh} className={classes.pullContainer} pullingContent={' '}>
-                </PullToRefresh>
-            </List> */}
 
             <Fab size='small' color='secondary' aria-label='new message' className={classes.newMessageButton} onClick={handleNewMessageDialog}>
                 <AddIcon className={classes.newMessageButtonIcon} />

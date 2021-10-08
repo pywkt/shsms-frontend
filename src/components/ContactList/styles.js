@@ -9,13 +9,6 @@ export default makeStyles((theme) => ({
     newMessageButtonIcon: {
         fill: theme.palette.primary.contrastText
     },
-    pullContainer: {
-        height: '70vh',
-        color: theme.palette.primary.contrastText,
-        '& .lds-ellipsis div': {
-            background: theme.palette.secondary.main
-        }
-    },
     collapsablePanel: {
         '& svg': {
             fill: theme.palette.text.primary

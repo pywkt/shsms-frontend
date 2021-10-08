@@ -39,7 +39,10 @@ const ConnectedNumbersList = ({ contacts }) => {
 
     const updateStyle = (isDragging) => ({
         border: isDragging && `1px dashed ${theme.palette.secondary.dark}`,
-        padding: isDragging && theme.spacing(1)
+        padding: isDragging && theme.spacing(1),
+        position: 'relative',
+        left: 0,
+        top: 0
     })
 
     return (
@@ -56,7 +59,6 @@ const ConnectedNumbersList = ({ contacts }) => {
                                 ...updateStyle(snapshot.isDragging),
                                 background: theme.palette.background.default,
                             }}>
-
                                 <ListItem disableGutters button onClick={() => handleOpenList(item?.[0])} className={classes.collapsablePanel}>
                                     <ListItemText
                                         primary={formatPhoneNumber(item?.[0])}
