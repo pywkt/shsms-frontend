@@ -62,9 +62,7 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     };
 
     const onDragStart = useCallback(() => { }, []);
-
     const onDragUpdate = useCallback(() => { }, []);
-
     const onDragEnd = useCallback((result) => {
         if (!result.destination) { return; }
 
@@ -94,7 +92,6 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                 onDragEnd={onDragEnd}
                 onDragStart={onDragStart}
                 onDragUpdate={onDragUpdate}
-                style={{ backgroundColor: 'pink', height: '70vh' }}
             >
                 <Droppable droppableId="droppable">
                     {(provided) => (
