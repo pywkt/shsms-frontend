@@ -1,24 +1,15 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
-import { Link } from '@reach/router';
-import formatDistanceStrict from 'date-fns/formatDistanceStrict';
-import { formatPhoneNumber } from "react-phone-number-input";
-import { SettingsContext } from "../../context/settingsContext";
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from '@material-ui/core/Avatar';
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add';
 import useStyles from './styles';
-import PullToRefresh from "react-simple-pull-to-refresh";
-import Collapse from '@material-ui/core/Collapse';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
 import NewMessageForm from "../NewMessageForm";
 import { getContacts } from '../../api/contacts';
+import { groupArrayOfObjects } from "../../helpers/sorting";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import ConnectedNumbersList from "./ConnectedNumbersList";
+import { SettingsContext } from "../../context/settingsContext";
 import { updateSettings } from "../../api/settings";
-import { groupArrayOfObjects, sortArrayOfObjects } from "../../helpers/sorting";
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const classes = useStyles();
@@ -27,33 +18,15 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const [newMessageOpen, setNewMessageOpen] = useState(false);
     const handleNewMessageDialog = () => setNewMessageOpen((prev) => !prev);
 
-    const handleOpenList = (listIndex) => {
-        const callUpdateSettings = async (data) => {
-            await updateSettings({
-                ...settingsContext.settings,
-                openLists: data
-            })
-
-            settingsContext.setSettings({ ...settingsContext.settings, openLists: data })
-        }
-
-        if (settingsContext.settings?.openLists?.indexOf(listIndex) === -1) {
-            callUpdateSettings([...settingsContext.settings?.openLists, listIndex])
-        } else {
-            const allOpenLists = settingsContext.settings?.openLists
-            const updatedListArray = allOpenLists.filter(item => item !== listIndex)
-            callUpdateSettings(updatedListArray)
-        }
-    }
-
     const updateCallback = useCallback(() => {
         updateTitlebar('Messages')
 
         const getAndSetContacts = async () => {
             const contacts02 = await getContacts();
             const groupedContacts = groupArrayOfObjects(contacts02, 'toPhoneNumber')
+            const sortOrder = settingsContext.settings.connectedNumbersOrder
 
-            setContacts(Object.entries(groupedContacts))
+            setContacts(Object.entries(groupedContacts).sort((a, b) => sortOrder.indexOf(a[0]) - sortOrder.indexOf(b[0])))
         }
 
         const handleIncomingMessage = async (data) => {
@@ -76,67 +49,61 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
             getAndSetContacts()
             initSocket()
         }
-    }, [contacts.length, updateTitlebar, incomingMessageCallback, socket])
+    }, [contacts.length, updateTitlebar, incomingMessageCallback, socket, settingsContext])
 
     useEffect(updateCallback, [])
 
-    const handleRefresh = async () => {
-        const contacts03 = await getContacts();
-        const groupedContacts = groupArrayOfObjects(contacts03, 'toPhoneNumber')
+    const reorder = (list, startIndex, endIndex) => {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
 
-        setContacts(Object.entries(groupedContacts))
-    }
+        return result;
+    };
+
+    const onDragStart = useCallback(() => { }, []);
+    const onDragUpdate = useCallback(() => { }, []);
+    const onDragEnd = useCallback((result) => {
+        if (!result.destination) { return; }
+
+        const newOrder = reorder(contacts, result.source.index, result.destination.index);
+
+        setContacts(newOrder);
+
+        const updatedContactOrder = newOrder.map(item => item[0]);
+
+        const updateDBandContext = async () => {
+            try {
+                await updateSettings({ ...settingsContext.settings, connectedNumbersOrder: updatedContactOrder })
+                settingsContext.setSettings({ ...settingsContext.settings, connectedNumbersOrder: updatedContactOrder })
+            } catch (err) {
+                throw err
+            }
+        }
+
+        updateDBandContext()
+    },
+        [contacts, settingsContext]
+    );
 
     return (
         <>
-            <List disablePadding>
-                <PullToRefresh onRefresh={handleRefresh} className={classes.pullContainer} pullingContent={' '}>
-                    {/* receiving number */}
-                    {contacts && contacts?.map((item, index) => (
-                        <div key={item?.[0]}>
-
-                            <ListItem disableGutters button onClick={() => handleOpenList(item?.[0])} className={classes.collapsablePanel}>
-                                <ListItemText
-                                    primary={formatPhoneNumber(item?.[0])}
-                                    primaryTypographyProps={{ color: 'textPrimary', variant: 'body2' }}
-                                />
-                                {settingsContext.settings?.openLists?.includes(item[0]) ? <ExpandLess /> : <ExpandMore />}
-                            </ListItem>
-
-                            <Collapse in={settingsContext.settings?.openLists?.indexOf(item?.[0]) !== -1} timeout="auto" unmountOnExit>
-                                <List key={index} dense disablePadding>
-
-                                    {/* number that sent the text */}
-                                    {sortArrayOfObjects(item?.[1], 'lastMessageRecieved', true).map(itemContact => (
-                                        <Link
-                                            key={itemContact?._id}
-                                            to={`/messages/${itemContact.toPhoneNumber}/${itemContact.phoneNumber}`}
-                                            state={{ toPhoneNumber: itemContact.toPhoneNumber, fromPhoneNumber: itemContact.phoneNumber }}
-                                            style={{ textDecoration: 'none' }}
-                                        >
-                                            <ListItem divider className={classes.fromNumberListItem}>
-                                                <ListItemAvatar>
-                                                    <Avatar className={classes.contactsListAvatar} />
-                                                </ListItemAvatar>
-                                                <ListItemText
-                                                    primary={itemContact?.alias || formatPhoneNumber(itemContact?.phoneNumber)}
-                                                    primaryTypographyProps={{ color: 'textSecondary', variant: 'h3' }}
-                                                    secondary={formatDistanceStrict(new Date(itemContact?.lastMessageRecieved), new Date()) + ' ago'}
-                                                    secondaryTypographyProps={{
-                                                        color: 'textSecondary',
-                                                        variant: 'caption'
-                                                    }}
-                                                />
-                                            </ListItem>
-
-                                        </Link>
-                                    ))}
-                                </List>
-                            </Collapse>
+            <DragDropContext
+                onDragEnd={onDragEnd}
+                onDragStart={onDragStart}
+                onDragUpdate={onDragUpdate}
+            >
+                <Droppable droppableId="droppable">
+                    {(provided) => (
+                        <div ref={provided.innerRef}>
+                            <List disablePadding>
+                                <ConnectedNumbersList contacts={contacts} />
+                            </List>
+                            {provided.placeholder}
                         </div>
-                    ))}
-                </PullToRefresh>
-            </List>
+                    )}
+                </Droppable>
+            </DragDropContext>
 
             <Fab size='small' color='secondary' aria-label='new message' className={classes.newMessageButton} onClick={handleNewMessageDialog}>
                 <AddIcon className={classes.newMessageButtonIcon} />

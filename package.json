@@ -16,6 +16,7 @@
     "cordova-plugin-device": "^2.0.3",
     "date-fns": "^2.23.0",
     "react": "^16.13.0",
+    "react-beautiful-dnd": "^13.1.0",
     "react-dom": "^16.13.0",
     "react-hook-form": "^7.12.2",
     "react-phone-number-input": "^3.1.25",
