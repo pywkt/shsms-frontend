@@ -9,7 +9,7 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ReceivedMessageList from "./ReceivedMessageList";
-import { updateSettings } from "../../api/settings";
+import { updateOpenLists } from "../../api/settings";
 import { useTheme } from '@material-ui/core'
 import { Draggable } from "react-beautiful-dnd";
 
@@ -19,14 +19,7 @@ const ConnectedNumbersList = ({ contacts }) => {
     const settingsContext = useContext(SettingsContext)
 
     const handleOpenList = (listIndex) => {
-        const callUpdateSettings = async (data) => {
-            await updateSettings({
-                ...settingsContext.settings,
-                openLists: data
-            })
-
-            settingsContext.setSettings({ ...settingsContext.settings, openLists: data })
-        }
+        const callUpdateSettings = async (data) => await updateOpenLists(data, settingsContext)
 
         if (settingsContext.settings?.openLists?.indexOf(listIndex) === -1) {
             callUpdateSettings([...settingsContext.settings?.openLists, listIndex])
@@ -61,7 +54,7 @@ const ConnectedNumbersList = ({ contacts }) => {
                             }}>
                                 <ListItem disableGutters button onClick={() => handleOpenList(item?.[0])} className={classes.collapsablePanel}>
                                     <ListItemText
-                                        primary={formatPhoneNumber(item?.[0])}
+                                        primary={settingsContext?.settings?.connectedNumbers?.find(i => i.phoneNumber === item?.[0] && i.alias)?.alias || formatPhoneNumber(item?.[0])}
                                         primaryTypographyProps={{ color: 'textPrimary', variant: 'body2' }}
                                     />
                                     {settingsContext.settings?.openLists?.includes(item[0]) ? <ExpandLess /> : <ExpandMore />}

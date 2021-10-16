@@ -11,19 +11,21 @@ import * as axios from 'axios';
 
 const ContactSettingsForm = ({ closeDialog }) => {
     const { control, handleSubmit } = useForm();
-
-    const phoneNumber = /[^/]*$/.exec(window.location.pathname)[0]
+    const reg = /([+])([^/])*/g
+    const phoneNumberGroup = window.location.pathname.match(reg)
+    const phoneNumber = phoneNumberGroup[1]
+    const toPhoneNumber = phoneNumberGroup[0]
 
     const updateContactSettings = async (data) => {
-        await axios.post(`${process.env.REACT_APP_SMS_SERVER_URL}/settings/updateAlias/${phoneNumber}`,
+        await axios.post(`${process.env.REACT_APP_SMS_SERVER_URL}/contacts/updateAlias`,
             {
                 phoneNumber,
+                toPhoneNumber,
                 newAlias: data.contactAlias
             },
             { headers: { "enc": process.env.REACT_APP_KEY_HASH } })
 
         window.location.reload()
-
     }
 
     return (

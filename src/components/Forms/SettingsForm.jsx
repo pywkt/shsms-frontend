@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -7,17 +7,22 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Switch from '@material-ui/core/Switch';
+import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { dropTables } from '../../api/settings';
+import EditIcon from '@material-ui/icons/Edit';
+import { dropTables, getSettings, updateSettings } from '../../api/settings';
 import { themeList } from '../../data/themeList';
 import { SettingsContext } from '../../context/settingsContext';
-import { updateSettings } from '../../api/settings';
+import * as axios from 'axios';
 
 const SettingsForm = ({ closeDialog }) => {
     const currentSettings = useContext(SettingsContext)
-    const { control, handleSubmit } = useForm({
+    const { control, handleSubmit, getValues, setValue } = useForm({
         defaultValues: {
             newTheme: currentSettings?.settings?.theme?.slug
         }
@@ -30,16 +35,18 @@ const SettingsForm = ({ closeDialog }) => {
     const submitNewSettings = async (data) => {
         const result = await updateSettings({
             ...currentSettings.settings, theme: { currentTheme: currentSettings.settings.theme.slug, newTheme: data.newTheme }
-        })
+        }, currentSettings)
 
         const findThemeResult = await themeList.find(i => i.slug === result.theme && i)
-        
+
         currentSettings.setSettings({
             ...result.settings,
             _id: result._id,
             theme: findThemeResult,
             showImageLink: result.showImageLink,
-            openLists: result.openLists
+            openLists: result.openLists,
+            connectedNumbersOrder: result.connectedNumbersOrder,
+            connectedNumbers: result.connectedNumbers
         })
 
         closeDialog()
@@ -60,9 +67,9 @@ const SettingsForm = ({ closeDialog }) => {
                 {view === 'confirm' ?
                     <Grid item container direction='column' spacing={2}>
                         <Grid item>
-                                <Typography variant='body2' color='primary' align='center'>
-                                    Are you sure you want to delete all entries in the database?
-                                </Typography>
+                            <Typography variant='body2' color='primary' align='center'>
+                                Are you sure you want to delete all entries in the database?
+                            </Typography>
                         </Grid>
                         <Grid item container justifyContent='space-evenly'>
                             <Button variant='outlined' onClick={() => setView('')}>Cancel</Button>
@@ -75,10 +82,83 @@ const SettingsForm = ({ closeDialog }) => {
         )
     }
 
+    const [editConnectedAlias, setEditConnectedAlias] = useState(null);
+
+    const updateConnectedAlias = async (item) => {
+        const dataToUpdate = {
+            phoneNumber: item,
+            alias: getValues(`${item}-alias`)
+        }
+        const cn = currentSettings.settings.connectedNumbers
+        const fff = cn.findIndex(i => i.phoneNumber === item)
+        cn.splice(fff, 1, dataToUpdate)
+
+        const res = await axios.post(`${process.env.REACT_APP_SMS_SERVER_URL}/settings/updateConnectedAlias`, cn,
+            { headers: { "enc": process.env.REACT_APP_KEY_HASH } })
+
+        currentSettings.setSettings({...res.data, theme: currentSettings.settings.theme})
+
+        setEditConnectedAlias(false)
+    }
+
+    const getSettingsCallback = useCallback(() => {
+        const fetchSettings = async () => {
+            await getSettings(currentSettings)
+        }
+
+        fetchSettings()
+    }, [currentSettings])
+
+    useEffect(getSettingsCallback, [])
+
     return (
         <form onSubmit={handleSubmit(submitNewSettings)}>
             <DialogContent dividers>
                 <Grid container direction='column' spacing={2}>
+
+                    <Grid item>
+                        <Typography variant='caption'>Connected Phone Numbers</Typography>
+                        <Divider />
+                    </Grid>
+
+                    <List dense>
+                        {currentSettings?.settings?.connectedNumbersOrder?.map((item, index) => (
+                            <ListItem key={item}>
+                                {editConnectedAlias !== item ?
+                                    <>
+                                        <ListItemText
+                                            primary={currentSettings.settings.connectedNumbers.find(i => i.phoneNumber === item)?.alias || item}
+                                            primaryTypographyProps={{ color: 'textPrimary', variant: 'body2' }}
+                                            onClick={() => setEditConnectedAlias(item)}
+                                        />
+                                        <EditIcon style={{ fontSize: 14 }} />
+                                    </> :
+                                    <Grid item container justifyContent='space-between' alignItems='center'>
+                                        <Controller
+                                            name={`${item}-alias`}
+                                            label={`${item}`}
+                                            control={control}
+                                            render={({ field }) =>
+                                                <TextField
+                                                    style={{ flexGrow: 1, marginRight: 10 }}
+                                                    margin='dense'
+                                                    variant='outlined'
+                                                    label={item}
+                                                    onChange={(e) => setValue(`${item}-alias`, e.target.value)}
+                                                />}
+                                        />
+
+                                        <Button variant='contained' color='secondary' onClick={() => updateConnectedAlias(item)}>Save</Button>
+                                    </Grid>
+                                }
+                            </ListItem>
+                            // <Typography variant='body2' onClick={() => updateConnectedAlias(item)}>{item}</Typography>
+                        ))}
+                    </List>
+
+
+
+
                     <Grid item>
                         <Typography variant='caption'>Theme</Typography>
                         <Divider />
