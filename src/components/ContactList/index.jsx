@@ -9,7 +9,7 @@ import { groupArrayOfObjects } from "../../helpers/sorting";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import ConnectedNumbersList from "./ConnectedNumbersList";
 import { SettingsContext } from "../../context/settingsContext";
-import { updateSettings } from "../../api/settings";
+import { getSettings, updateSettings } from "../../api/settings";
 
 const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const classes = useStyles();
@@ -23,8 +23,9 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
 
         const getAndSetContacts = async () => {
             const contacts02 = await getContacts();
+            const recentSettings = await getSettings(settingsContext);
             const groupedContacts = groupArrayOfObjects(contacts02, 'toPhoneNumber')
-            const sortOrder = settingsContext.settings.connectedNumbersOrder
+            const sortOrder = recentSettings.connectedNumbersOrder
 
             setContacts(Object.entries(groupedContacts).sort((a, b) => sortOrder.indexOf(a[0]) - sortOrder.indexOf(b[0])))
         }
@@ -66,24 +67,24 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
     const onDragEnd = useCallback((result) => {
         if (!result.destination) { return; }
 
-        const newOrder = reorder(contacts, result.source.index, result.destination.index);
+        const bizarreLoveTriangle = reorder(contacts, result.source.index, result.destination.index);
 
-        setContacts(newOrder);
+        setContacts(bizarreLoveTriangle);
 
-        const updatedContactOrder = newOrder.map(item => item[0]);
+        const updatedContactOrder = bizarreLoveTriangle.map(item => item[0]);
 
         const updateDBandContext = async () => {
             try {
-                await updateSettings({ ...settingsContext.settings, connectedNumbersOrder: updatedContactOrder })
-                settingsContext.setSettings({ ...settingsContext.settings, connectedNumbersOrder: updatedContactOrder })
+                await updateSettings({ ...settingsContext.settings, connectedNumbersOrder: updatedContactOrder }, settingsContext)
             } catch (err) {
                 throw err
             }
         }
 
         updateDBandContext()
+        updateCallback()
     },
-        [contacts, settingsContext]
+        [contacts, settingsContext, updateCallback]
     );
 
     return (

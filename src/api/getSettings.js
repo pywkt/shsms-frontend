@@ -8,5 +8,5 @@ export const getSettings = async () => {
             }
         })
 
-        return response.data[0]
+        return response?.data
 }
