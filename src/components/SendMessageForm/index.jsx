@@ -89,10 +89,12 @@ const SendMessageForm = ({ phoneNumber, locationState }) => {
                                 <Grid item xs={12} className={classes.sendMessageFormControls}>
                                     <TextField
                                         fullWidth
+                                        multiline
                                         size='small'
                                         label='Message'
                                         placeholder={`Sending from ${formatPhoneNumber(locationState?.toPhoneNumber)}`}
                                         variant='outlined'
+                                        InputLabelProps={{ className: classes.sendMessageInputLabel}}
                                         InputProps={{
                                             endAdornment: <SendButton cb={handleImageCallback} loading={loading} />
                                         }}
