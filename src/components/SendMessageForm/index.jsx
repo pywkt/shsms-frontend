@@ -96,7 +96,7 @@ const SendMessageForm = ({ phoneNumber, locationState }) => {
                                         variant='outlined'
                                         InputLabelProps={{ className: classes.sendMessageInputLabel}}
                                         InputProps={{
-                                            endAdornment: <SendButton cb={handleImageCallback} loading={loading} />,
+                                            endAdornment: <SendButton cb={handleImageCallback} loading={loading} />
                                         }}
                                         {...field}
                                     />
