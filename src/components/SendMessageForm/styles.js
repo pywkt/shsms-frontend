@@ -13,6 +13,7 @@ export default makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'flex-end',
+        backgroundColor: theme.palette.background.default
     },
     sendMessageInputLabel: {
         paddingTop: 6,
