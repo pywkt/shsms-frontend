@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { formatPhoneNumber } from 'react-phone-number-input';
+import useAllKeysPress from '../../hooks/useAllKeysPress';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -15,12 +16,14 @@ const SendMessageForm = ({ phoneNumber, locationState }) => {
     const [inputType, setInputType] = useState('text');
     const [imageToSend, setImageToSend] = useState({});
 
-    const { control, handleSubmit, setValue } = useForm({
+    const { control, handleSubmit, setValue, getValues } = useForm({
         defaultValues: {
             phoneNumber: locationState?.fromPhoneNumber,
             photo: ''
         }
     });
+
+    const sendWithEnter = useAllKeysPress({ userKeys: ['Shift', 'Enter'], order: true })
 
     const handleImageCallback = (image) => {
         setImageToSend(image.dataUrl)
@@ -28,7 +31,12 @@ const SendMessageForm = ({ phoneNumber, locationState }) => {
         setValue('photo', image.dataUrl)
     }
 
-    const onSubmit = async (data) => {
+    const handleCancelSendImage = useCallback(() => {
+        setInputType('text');
+        setValue('photo', '')
+    }, [setValue])
+
+    const onSubmit = useCallback(async (data) => {
         setLoading(true)
 
         if (inputType === 'text') {
@@ -65,12 +73,16 @@ const SendMessageForm = ({ phoneNumber, locationState }) => {
                 }
             }
         }
-    }
+    }, [handleCancelSendImage, inputType, locationState, setValue])
 
-    const handleCancelSendImage = () => {
-        setInputType('text');
-        setValue('photo', '')
-    }
+    useEffect(() => {
+        if (sendWithEnter) {
+            const data = getValues();
+
+            const sendSMSWithKeystroke = async () => await onSubmit(data)
+            sendSMSWithKeystroke()
+        }
+    }, [sendWithEnter, getValues, onSubmit])
 
     return (
 
@@ -94,9 +106,9 @@ const SendMessageForm = ({ phoneNumber, locationState }) => {
                                         label='Message'
                                         placeholder={`Sending from ${formatPhoneNumber(locationState?.toPhoneNumber)}`}
                                         variant='outlined'
-                                        InputLabelProps={{ className: classes.sendMessageInputLabel}}
+                                        InputLabelProps={{ className: classes.sendMessageInputLabel }}
                                         InputProps={{
-                                            endAdornment: <SendButton cb={handleImageCallback} loading={loading} />
+                                            endAdornment: <SendButton cb={handleImageCallback} loading={loading} />,
                                         }}
                                         {...field}
                                     />
