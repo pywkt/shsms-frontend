@@ -24,6 +24,7 @@ export default makeStyles((theme) => {
             backgroundColor: theme.palette.primary.light,
             color: theme.palette.primary.contrastText,
             maxWidth: '60vw',
+            wordBreak: 'break-word',
             '& a': {
                 color: `${theme.palette.primary.contrastText} !important`
             }
@@ -33,6 +34,7 @@ export default makeStyles((theme) => {
             backgroundColor: theme.palette.secondary.light,
             color: theme.palette.secondary.contrastText,
             maxWidth: '60vw',
+            wordBreak: 'break-word',
             '& a': {
                 color: `${theme.palette.secondary.contrastText} !important`
             }

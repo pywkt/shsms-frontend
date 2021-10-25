@@ -7,11 +7,19 @@ export default makeStyles((theme) => ({
         left: 0,
         padding: theme.spacing(1),
         paddingTop: 0,
+        lineHeight: theme.typography.pxToRem(12)
     },
     sendMessageFormControls: {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'flex-end',
+        backgroundColor: theme.palette.background.default
+    },
+    sendMessageInputLabel: {
+        paddingTop: 6,
+        '&.MuiInputLabel-outlined.MuiInputLabel-shrink': {
+            paddingTop: '0 !important'
+        }
     },
     addPhotoPopupPaper: {
         paddingTop: theme.spacing(1),

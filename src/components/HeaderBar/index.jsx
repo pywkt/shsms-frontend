@@ -12,6 +12,7 @@ import TuneIcon from '@material-ui/icons/Tune';
 import IconButton from '@material-ui/core/IconButton';
 import SettingsDialog from '../SettingsDialog';
 import useStyles from './styles';
+import { useDoubleClick } from '../../hooks/useDoubleClick';
 
 const HideOnScroll = (props) => {
     const { children } = props;
@@ -29,6 +30,7 @@ const HeaderBar = ({ label, children }) => {
     const isOnHome = window.location.pathname === '/';
     const classes = useStyles({ isOnHome });
 
+    const handleRefresh = useDoubleClick(null, () => window.location.reload())
     const handleSettingsDialog = () => setSettingsDialogOpen((prev) => !prev);
     const handleGoBack = () => navigate('/');
 
@@ -40,7 +42,7 @@ const HeaderBar = ({ label, children }) => {
                         {!isOnHome &&
                             <IconButton size='small' onClick={handleGoBack} className={classes.appBarIcons}><ArrowBackIosIcon /></IconButton>
                         }
-                        <Typography variant='h1' color='initial' className={classes.headerBarTitle}>{label}</Typography>
+                        <Typography variant='h1' color='initial' className={classes.headerBarTitle} onClick={handleRefresh}>{label}</Typography>
                         <IconButton size='small' onClick={handleSettingsDialog} className={classes.appBarIcons}><TuneIcon /></IconButton>
                     </Toolbar>
                 </AppBar>
