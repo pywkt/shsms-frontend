@@ -39,11 +39,8 @@ I have created a pretty extensive guide on gitbook, it seems very daunting at fi
 
 [https://pywkt.gitbook.io/shsms/](https://pywkt.gitbook.io/shsms/)
 
-### Issues
-
-If there's something vital I left out in the documentation, send an email to: `34s44nzy [at] anonaddy.me`. (really hoping I didn't open a can of worms with that.)
-
-If there's something wrong with the app, or a feature worth talking about, submit a ticket for it through Github and it will be addressed
+### Issues/Bugs
+If there's something wrong with the app, or a new feature worth talking about, submit a ticket for it through Github and it will be addressed.
 
 ### October 25, 2001 - v1.2.0 Release
    * Added ability to rename connected numbers
