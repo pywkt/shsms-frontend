@@ -42,7 +42,7 @@ I have created a pretty extensive guide on gitbook, it seems very daunting at fi
 ### Issues/Bugs
 If there's something wrong with the app, or a new feature worth talking about, submit a ticket for it through Github and it will be addressed.
 
-### October 25, 2001 - v1.2.0 Release
+### October 25, 2021 - v1.2.0 Release
    * Added ability to rename connected numbers
    * Added ability to drag/drop/reorder connected numbers
    * Changed refresh gesture
