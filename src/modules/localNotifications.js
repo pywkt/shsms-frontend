@@ -18,9 +18,12 @@ export const createNotificationChannel = async (specData) => {
 }
 
 export const scheduleLocalNotification = async (data, view) => {
+    const dateOfLastMessage = new Date(Math.max(...data.map(e => new Date(e.lastMessageRecieved)))).toISOString()
+    const latestMessageContact = data.find(contact => contact.lastMessageRecieved === dateOfLastMessage && contact)
+
     if (!isWeb) {
         let specData;
-        view === 'contacts' ? specData = data[data.length - 1] : specData = data
+        view === 'contacts' ? specData = latestMessageContact : specData = data
 
         BackgroundMode.isScreenOff(async off => {
             console.log('isScreenOff > off:', off)
