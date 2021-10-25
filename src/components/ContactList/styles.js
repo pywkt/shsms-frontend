@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 
 export default makeStyles((theme) => ({
     newMessageButton: {
-        position: 'absolute',
+        position: 'fixed',
         right: theme.spacing(2),
         bottom: theme.spacing(2)
     },
