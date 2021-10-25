@@ -69,3 +69,6 @@ If there's something wrong with the app, or a feature worth talking about, submi
    * Images/colors assignable to contacts.
    * ~~Rename/create alias for your owned numbers.~~
    * Add in-app version checking.
+   * Fix bug where number/alias is incorrect in notification.
+   * Add option to disable all notifications through the app
+   * Move app settings to a drawer instead of the dialog it's currently in.
