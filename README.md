@@ -29,7 +29,7 @@ Please note: This app makes several assumptions about you as a user. First and f
 
 ![shSMS](./public/docs/images/contact-list.png "Contact List") ![shSMS](./public/docs/images/message-01.png "Messages") ![shSMS](./public/docs/images/settings-01.png "Settings") ![shSMS](./public/docs/images/notification.png "Notification")
 
-**Note:** I took those screenshots on the emulator and I couldn't get one of the notification appearing on the lock screen, but it does turn on the screen and appear on the actual device when the phone is on and the screen is locked. Also, the screenshots above do not show multiple phone numbers, since the ability to rename the numbers is not implemented yet it's tricky to get an image without having to have a black box around several parts of the image. And that doesn't look cool.
+**Note:** I took those screenshots on the emulator and I couldn't get one of the notification appearing on the lock screen, but it does turn on the screen and appear on the actual device when the phone is on and the screen is locked.
 
 ---
 
@@ -45,6 +45,11 @@ If there's something vital I left out in the documentation, send an email to: `3
 
 If there's something wrong with the app, or a feature worth talking about, submit a ticket for it through Github and it will be addressed
 
+### October 25, 2001 - v1.2.0 Release
+   * Added ability to rename connected numbers
+   * Added ability to drag/drop/reorder connected numbers
+   * Changed refresh gesture
+
 ### September 28, 2021 - v1.1.0 Release
    * Added support for multiple Twilio numbers to be connected.
    * Added ability to import number from device's saved contacts.
@@ -57,10 +62,10 @@ If there's something wrong with the app, or a feature worth talking about, submi
    * ~~Send text with MMS/multiple MMS in one message.~~
    * ~~Swipe down to refresh.~~
    * Encrypt/decrypt messages to and from the database (full self-hosting may solve this. tbd.).
-   * Make top-level (owned) phone numbers draggable/sortable.
+   * ~~Make top-level (owned) phone numbers draggable/sortable.~~
    * Overall code cleanup. lint, rename variables etc.
    * Add visual indicators when sending media other than images.
    * ~~Update docs for setting up without Heroku/mLab (still testing).~~
    * Images/colors assignable to contacts.
-   * Rename/create alias for your owned numbers.
+   * ~~Rename/create alias for your owned numbers.~~
    * Add in-app version checking.
