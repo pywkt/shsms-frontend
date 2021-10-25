@@ -46,6 +46,8 @@ If there's something wrong with the app, or a new feature worth talking about, s
    * Added ability to rename connected numbers
    * Added ability to drag/drop/reorder connected numbers
    * Changed refresh gesture
+   * Fixed bug where new message icon wasn't sticking to bottom
+   * Fixed bug where notification was showing the incorrect sender info
 
 ### September 28, 2021 - v1.1.0 Release
    * Added support for multiple Twilio numbers to be connected.
@@ -66,6 +68,6 @@ If there's something wrong with the app, or a new feature worth talking about, s
    * Images/colors assignable to contacts.
    * ~~Rename/create alias for your owned numbers.~~
    * Add in-app version checking.
-   * Fix bug where (sometimes) number/alias is incorrect in notification.
+   * ~~Fix bug where (sometimes) number/alias is incorrect in notification.~~
    * Add option to disable all notifications through the app
    * Move app settings to a drawer instead of the dialog it's currently in.
