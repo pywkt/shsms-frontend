@@ -18,10 +18,10 @@ export const createNotificationChannel = async (specData) => {
 }
 
 export const scheduleLocalNotification = async (data, view) => {
-    const dateOfLastMessage = new Date(Math.max(...data.map(e => new Date(e.lastMessageRecieved)))).toISOString()
-    const latestMessageContact = data.find(contact => contact.lastMessageRecieved === dateOfLastMessage && contact)
-
     if (!isWeb) {
+        const dateOfLastMessage = new Date(Math.max(...data.map(e => new Date(e.lastMessageRecieved)))).toISOString()
+        const latestMessageContact = data.find(contact => contact.lastMessageRecieved === dateOfLastMessage && contact)
+
         let specData;
         view === 'contacts' ? specData = latestMessageContact : specData = data
 
