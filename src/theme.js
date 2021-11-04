@@ -78,5 +78,10 @@ export default createTheme({
                 color: '#2F5061'
             }
         },
+        MuiDivider: {
+            root: {
+                marginBottom: 10
+            }
+        }
     }
 })
