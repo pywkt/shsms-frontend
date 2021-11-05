@@ -39,16 +39,15 @@ I have created a pretty extensive guide on gitbook, it seems very daunting at fi
 
 [https://pywkt.gitbook.io/shsms/](https://pywkt.gitbook.io/shsms/)
 
-### Issues
+### Issues/Bugs
+If there's something wrong with the app, or a new feature worth talking about, submit a ticket for it through Github and it will be addressed.
 
-If there's something vital I left out in the documentation, send an email to: `34s44nzy [at] anonaddy.me`. (really hoping I didn't open a can of worms with that.)
-
-If there's something wrong with the app, or a feature worth talking about, submit a ticket for it through Github and it will be addressed
-
-### October 25, 2001 - v1.2.0 Release
+### October 25, 2021 - v1.2.0 Release
    * Added ability to rename connected numbers
    * Added ability to drag/drop/reorder connected numbers
    * Changed refresh gesture
+   * Fixed bug where new message icon wasn't sticking to bottom
+   * Fixed bug where notification was showing the incorrect sender info
 
 ### September 28, 2021 - v1.1.0 Release
    * Added support for multiple Twilio numbers to be connected.
@@ -69,3 +68,6 @@ If there's something wrong with the app, or a feature worth talking about, submi
    * Images/colors assignable to contacts.
    * ~~Rename/create alias for your owned numbers.~~
    * Add in-app version checking.
+   * ~~Fix bug where (sometimes) number/alias is incorrect in notification.~~
+   * Add option to disable all notifications through the app
+   * Move app settings to a drawer instead of the dialog it's currently in.

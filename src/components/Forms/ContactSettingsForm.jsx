@@ -1,13 +1,14 @@
 import React from 'react';
+import { navigate } from '@reach/router';
 import { useForm, Controller } from 'react-hook-form';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import * as axios from 'axios';
+import { removeContact } from '../../api/contacts';
 
 const ContactSettingsForm = ({ closeDialog }) => {
     const { control, handleSubmit } = useForm();
@@ -28,15 +29,21 @@ const ContactSettingsForm = ({ closeDialog }) => {
         window.location.reload()
     }
 
+    const handleDeleteContact = async () => {
+        await removeContact(toPhoneNumber, phoneNumber)
+        closeDialog()
+        navigate('/')
+
+    }
+
     return (
         <form onSubmit={handleSubmit(updateContactSettings)}>
             <DialogContent dividers>
-                <Grid container direction='column' spacing={2}>
-                    <Grid item>
-                        <Typography variant='caption'>Contact Settings</Typography>
-                        <Divider />
-                    </Grid>
 
+                <Grid item>
+                    <Typography variant='caption'>Contact Settings</Typography>
+                </Grid>
+                <Grid container item direction='column'>
                     <Grid item>
                         <Controller
                             control={control}
@@ -50,6 +57,10 @@ const ContactSettingsForm = ({ closeDialog }) => {
                                     {...field}
                                 />}
                         />
+                        <Grid item>
+                            <Button fullWidth variant='contained' color='secondary' onClick={handleDeleteContact} style={{ marginTop: 20 }}>Delete Contact</Button>
+                        </Grid>
+
                     </Grid>
 
 
