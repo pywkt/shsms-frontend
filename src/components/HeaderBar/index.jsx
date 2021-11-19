@@ -14,6 +14,9 @@ import SettingsDialog from '../SettingsDialog';
 import useStyles from './styles';
 import { useDoubleClick } from '../../hooks/useDoubleClick';
 
+import SettingsDrawer from '../SettingsDrawer';
+import SettingsForm from '../Forms/SettingsForm';
+
 const HideOnScroll = (props) => {
     const { children } = props;
     const trigger = useScrollTrigger();
@@ -26,12 +29,12 @@ const HideOnScroll = (props) => {
 }
 
 const HeaderBar = ({ label, children }) => {
-    const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
+    const [settingsDrawerOpen, setSettingsDrawerOpen] = useState(false);
     const isOnHome = window.location.pathname === '/';
     const classes = useStyles({ isOnHome });
 
     const handleRefresh = useDoubleClick(null, () => window.location.reload())
-    const handleSettingsDialog = () => setSettingsDialogOpen((prev) => !prev);
+    const handleSettingsDrawer = () => setSettingsDrawerOpen((prev) => !prev);
     const handleGoBack = () => navigate('/');
 
     return (
@@ -43,7 +46,7 @@ const HeaderBar = ({ label, children }) => {
                             <IconButton size='small' onClick={handleGoBack} className={classes.appBarIcons}><ArrowBackIosIcon /></IconButton>
                         }
                         <Typography variant='h1' color='initial' className={classes.headerBarTitle} onClick={handleRefresh}>{label}</Typography>
-                        <IconButton size='small' onClick={handleSettingsDialog} className={classes.appBarIcons}><TuneIcon /></IconButton>
+                        <IconButton size='small' onClick={handleSettingsDrawer} className={classes.appBarIcons}><TuneIcon /></IconButton>
                     </Toolbar>
                 </AppBar>
             </HideOnScroll>
@@ -53,10 +56,12 @@ const HeaderBar = ({ label, children }) => {
                 </Box>
             </Container>
 
-            <SettingsDialog
+            <SettingsDrawer open={settingsDrawerOpen} onClose={handleSettingsDrawer}><SettingsForm /></SettingsDrawer>
+
+            {/* <SettingsDialog
                 open={settingsDialogOpen}
                 closeDialog={handleSettingsDialog}
-            />
+            /> */}
         </>
     )
 }

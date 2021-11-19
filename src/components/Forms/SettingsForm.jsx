@@ -28,7 +28,8 @@ const SettingsForm = ({ closeDialog }) => {
         }
     });
 
-    const handleImageLinkSwitch = (e) => {
+    const handleImageLinkSwitch = async (e) => {
+        await updateSettings({...currentSettings.settings, showImageLink: !currentSettings.settings.showImageLink})
         currentSettings.setSettings({ ...currentSettings.settings, showImageLink: !currentSettings.settings.showImageLink })
     }
 
@@ -96,7 +97,7 @@ const SettingsForm = ({ closeDialog }) => {
         const res = await axios.post(`${process.env.REACT_APP_SMS_SERVER_URL}/settings/updateConnectedAlias`, cn,
             { headers: { "enc": process.env.REACT_APP_KEY_HASH } })
 
-        currentSettings.setSettings({...res.data, theme: currentSettings.settings.theme})
+        currentSettings.setSettings({ ...res.data, theme: currentSettings.settings.theme })
 
         setEditConnectedAlias(false)
     }
@@ -112,7 +113,7 @@ const SettingsForm = ({ closeDialog }) => {
     useEffect(getSettingsCallback, [])
 
     return (
-        <form onSubmit={handleSubmit(submitNewSettings)}>
+        <form onSubmit={handleSubmit(submitNewSettings)} style={{ backgroundColor: 'lightcyan', height: '100vh' }}>
             <DialogContent dividers>
                 <Grid container direction='column' spacing={2}>
 
@@ -152,7 +153,6 @@ const SettingsForm = ({ closeDialog }) => {
                                     </Grid>
                                 }
                             </ListItem>
-                            // <Typography variant='body2' onClick={() => updateConnectedAlias(item)}>{item}</Typography>
                         ))}
                     </List>
 
@@ -180,25 +180,25 @@ const SettingsForm = ({ closeDialog }) => {
                         />
                     </Grid>
 
-                    <Grid item>
-                        <Grid item container justifyContent='space-between'>
-                            <Controller
-                                name='showImageLink'
-                                label='Show'
-                                control={control}
-                                render={({ field }) =>
-                                    <FormControlLabel
-                                        label="Show link to images for MMS"
-                                        control={
-                                            <Switch {...field}
-                                                checked={currentSettings.settings.showImageLink}
-                                                onChange={handleImageLinkSwitch}
-                                                size='small'
-                                            />}
-                                    />}
-                            />
-                        </Grid>
+                    {/* <Grid item> */}
+                    <Grid item container justifyContent='space-between' style={{ flexGrow: 1 }}>
+                        <Controller
+                            name='showImageLink'
+                            label='Show'
+                            control={control}
+                            render={({ field }) =>
+                                <FormControlLabel
+                                    label="Show link to images for MMS"
+                                    control={
+                                        <Switch {...field}
+                                            checked={currentSettings.settings.showImageLink}
+                                            onChange={handleImageLinkSwitch}
+                                            size='small'
+                                        />}
+                                />}
+                        />
                     </Grid>
+                    {/* </Grid> */}
 
                     <Grid item>
                         <Typography variant='caption'>Danger</Typography>
@@ -207,10 +207,10 @@ const SettingsForm = ({ closeDialog }) => {
                     <DestroyContent />
                 </Grid>
             </DialogContent>
-            <DialogActions>
+            {/* <DialogActions>
                 <Button onClick={closeDialog} color='primary'>Cancel</Button>
                 <Button type='submit' color='primary'>Save</Button>
-            </DialogActions>
+            </DialogActions> */}
         </form>
     )
 }
