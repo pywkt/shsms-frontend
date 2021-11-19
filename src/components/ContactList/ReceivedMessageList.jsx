@@ -26,7 +26,7 @@ const ReceivedMessageList = ({ message }) => {
                             <Avatar className={classes.contactsListAvatar} />
                         </ListItemAvatar>
                         <ListItemText
-                            primary={itemContact?.alias || formatPhoneNumber(itemContact?.phoneNumber)}
+                            primary={itemContact?.alias || formatPhoneNumber(itemContact?.phoneNumber) || itemContact?.phoneNumber}
                             primaryTypographyProps={{ color: 'textSecondary', variant: 'h3' }}
                             secondary={formatDistanceStrict(new Date(itemContact?.lastMessageRecieved), new Date()) + ' ago'}
                             secondaryTypographyProps={{
