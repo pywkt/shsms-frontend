@@ -27,9 +27,14 @@ const SettingsForm = ({ closeDialog }) => {
         }
     });
 
-    const handleImageLinkSwitch = async (e) => {
+    const handleImageLinkSwitch = async () => {
         await updateSettings({ ...currentSettings.settings, showImageLink: !currentSettings.settings.showImageLink })
         currentSettings.setSettings({ ...currentSettings.settings, showImageLink: !currentSettings.settings.showImageLink })
+    }
+
+    const handleDisableNotifications = async () => {
+        await updateSettings({ ...currentSettings.settings, disableNotifications: !currentSettings.settings.disableNotifications })
+        currentSettings.setSettings({ ...currentSettings.settings, disableNotifications: !currentSettings.settings.disableNotifications })
     }
 
     const submitNewSettings = async (e) => {
@@ -160,7 +165,6 @@ const SettingsForm = ({ closeDialog }) => {
                     <Grid item container>
                         <Controller
                             name='showImageLink'
-                            label='Show'
                             control={control}
                             render={({ field }) =>
                                 <FormControlLabel
@@ -175,12 +179,24 @@ const SettingsForm = ({ closeDialog }) => {
                         />
                     </Grid>
 
-                    <Divider />
-
-                    <Grid item>
-                        {/* <Typography variant='caption'>Danger</Typography> */}
-                        {/* <Divider /> */}
+                    <Grid item container>
+                        <Controller
+                            name='disablePushNotifications'
+                            control={control}
+                            render={({ field }) =>
+                                <FormControlLabel
+                                    label={<Typography align='right' variant='caption' style={{ marginLeft: 10 }}>Disable push notifications</Typography>}
+                                    control={
+                                        <Switch {...field}
+                                            checked={currentSettings.settings.disableNotifications}
+                                            onChange={handleDisableNotifications}
+                                            size='small'
+                                        />}
+                                />}
+                        />
                     </Grid>
+
+                    <Divider />
                     <DestroyContent />
                 </Grid>
             </DialogContent>
