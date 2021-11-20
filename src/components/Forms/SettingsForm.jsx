@@ -33,8 +33,6 @@ const SettingsForm = ({ closeDialog }) => {
     }
 
     const handleDisableNotifications = async () => {
-        console.log('handleDisable')
-        // console.log(currentSettings.settings)
         await updateSettings({ ...currentSettings.settings, disableNotifications: !currentSettings.settings.disableNotifications })
         currentSettings.setSettings({ ...currentSettings.settings, disableNotifications: !currentSettings.settings.disableNotifications })
     }
@@ -104,8 +102,6 @@ const SettingsForm = ({ closeDialog }) => {
     }, [currentSettings])
 
     useEffect(getSettingsCallback, [])
-
-    // console.log(currentSettings.settings.disableNotifications)
 
     return (
         <form onSubmit={handleSubmit(submitNewSettings)} style={{ height: '100vh', width: '80vw' }}>
@@ -201,11 +197,6 @@ const SettingsForm = ({ closeDialog }) => {
                     </Grid>
 
                     <Divider />
-
-                    <Grid item>
-                        {/* <Typography variant='caption'>Danger</Typography> */}
-                        {/* <Divider /> */}
-                    </Grid>
                     <DestroyContent />
                 </Grid>
             </DialogContent>
