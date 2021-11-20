@@ -197,7 +197,11 @@ const SettingsForm = ({ closeDialog }) => {
                     </Grid>
 
                     <Divider />
-                    <DestroyContent />
+
+                    <Grid item>
+                        <DestroyContent />
+                    </Grid>
+                    
                 </Grid>
             </DialogContent>
         </form>
