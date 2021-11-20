@@ -11,7 +11,7 @@ import * as axios from 'axios';
 import { removeContact } from '../../api/contacts';
 import { formatPhoneNumber } from 'react-phone-number-input';
 
-const ContactSettingsForm = ({ closeDialog }) => {
+const ContactSettingsForm = ({onClose}) => {
     const { control, handleSubmit } = useForm();
     const reg = /([+])([^/])*/g
     const phoneNumberGroup = window.location.pathname.match(reg)
@@ -32,7 +32,7 @@ const ContactSettingsForm = ({ closeDialog }) => {
 
     const handleDeleteContact = async () => {
         await removeContact(toPhoneNumber, phoneNumber)
-        closeDialog()
+        onClose()
         navigate('/')
 
     }

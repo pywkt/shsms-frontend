@@ -55,7 +55,12 @@ const HeaderBar = ({ label, children }) => {
                 </Box>
             </Container>
 
-            <SettingsDrawer open={settingsDrawerOpen} onClose={handleSettingsDrawer}>{isOnHome ? <SettingsForm /> : <ContactSettingsForm />}</SettingsDrawer>
+            <SettingsDrawer
+                open={settingsDrawerOpen}
+                onClose={handleSettingsDrawer}
+            >
+                {isOnHome ? <SettingsForm /> : <ContactSettingsForm onClose={handleSettingsDrawer} />}
+            </SettingsDrawer>
         </>
     )
 }
