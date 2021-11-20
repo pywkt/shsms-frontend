@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core';
 export default makeStyles((theme) => ({
     settingsDrawer: {
         position: 'relative',
-        // maxWidth: '80vw'
     },
     settingsDrawerFooter: {
         color: 'pink',
@@ -11,5 +10,8 @@ export default makeStyles((theme) => ({
         bottom: 0,
         left: 0,
         padding: theme.spacing(2)
+    },
+    closeButton: {
+        justifyContent: 'flex-end'
     }
 }))

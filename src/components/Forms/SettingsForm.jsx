@@ -63,7 +63,7 @@ const SettingsForm = ({ closeDialog }) => {
                             <Button variant='contained' color='secondary' onClick={initDrop}>Drop Tables</Button>
                         </Grid>
                     </Grid> :
-                    <Button fullWidth variant='text' color='secondary' onClick={() => setView('confirm')}>Clear Database</Button>
+                    <Button fullWidth variant='outlined' color='secondary' onClick={() => setView('confirm')}>Clear Database</Button>
                 }
             </>
         )
@@ -99,12 +99,12 @@ const SettingsForm = ({ closeDialog }) => {
     useEffect(getSettingsCallback, [])
 
     return (
-        <form onSubmit={handleSubmit(submitNewSettings)} style={{ height: '100vh', width: '90vw' }}>
+        <form onSubmit={handleSubmit(submitNewSettings)} style={{ height: '100vh', width: '80vw' }}>
             <DialogContent>
                 <Grid container direction='column' spacing={2}>
 
-                    <List dense>
-                        {currentSettings?.settings?.connectedNumbersOrder?.map((item, index) => (
+                    <List dense subheader={<Typography variant='caption' color='textSecondary'>Connected Numbers</Typography>}>
+                        {currentSettings?.settings?.connectedNumbersOrder?.map((item) => (
                             <ListItem key={item}>
                                 {editConnectedAlias !== item ?
                                     <>
@@ -137,11 +137,13 @@ const SettingsForm = ({ closeDialog }) => {
                         ))}
                     </List>
 
+                    <Divider />
+
                     <Grid item>
                         <Controller
-                            render={({ field, label }) => (
+                            render={({ field }) => (
                                 <TextField {...field} select onChange={submitNewSettings} fullWidth variant='outlined' label='Theme' value={currentSettings.settings.theme.slug}>
-                                    {themeList.map((item, index) => (
+                                    {themeList.map((item) => (
                                         <MenuItem key={item.slug} value={item.slug}>
                                             {item.displayName}
                                         </MenuItem>
@@ -152,6 +154,8 @@ const SettingsForm = ({ closeDialog }) => {
                             control={control}
                         />
                     </Grid>
+
+                    <Divider />
 
                     <Grid item container>
                         <Controller
@@ -171,9 +175,11 @@ const SettingsForm = ({ closeDialog }) => {
                         />
                     </Grid>
 
+                    <Divider />
+
                     <Grid item>
-                        <Typography variant='caption'>Danger</Typography>
-                        <Divider />
+                        {/* <Typography variant='caption'>Danger</Typography> */}
+                        {/* <Divider /> */}
                     </Grid>
                     <DestroyContent />
                 </Grid>
