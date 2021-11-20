@@ -37,8 +37,6 @@ const ContactSettingsForm = ({ closeDialog }) => {
 
     }
 
-    console.log(phoneNumber)
-
     return (
         <form onSubmit={handleSubmit(updateContactSettings)} style={{ height: '100vh' }}>
             <DialogContent>
