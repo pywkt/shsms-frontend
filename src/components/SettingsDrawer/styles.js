@@ -2,8 +2,8 @@ import { makeStyles } from '@material-ui/core';
 
 export default makeStyles((theme) => ({
     settingsDrawer: {
-        position: 'relative'
-        // minWidth: '100vw'
+        position: 'relative',
+        // maxWidth: '80vw'
     },
     settingsDrawerFooter: {
         color: 'pink',

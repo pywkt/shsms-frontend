@@ -10,12 +10,11 @@ import Box from '@material-ui/core/Box';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import TuneIcon from '@material-ui/icons/Tune';
 import IconButton from '@material-ui/core/IconButton';
-import SettingsDialog from '../SettingsDialog';
 import useStyles from './styles';
 import { useDoubleClick } from '../../hooks/useDoubleClick';
-
 import SettingsDrawer from '../SettingsDrawer';
 import SettingsForm from '../Forms/SettingsForm';
+import ContactSettingsForm from '../Forms/ContactSettingsForm';
 
 const HideOnScroll = (props) => {
     const { children } = props;
@@ -56,12 +55,7 @@ const HeaderBar = ({ label, children }) => {
                 </Box>
             </Container>
 
-            <SettingsDrawer open={settingsDrawerOpen} onClose={handleSettingsDrawer}><SettingsForm /></SettingsDrawer>
-
-            {/* <SettingsDialog
-                open={settingsDialogOpen}
-                closeDialog={handleSettingsDialog}
-            /> */}
+            <SettingsDrawer open={settingsDrawerOpen} onClose={handleSettingsDrawer}>{isOnHome ? <SettingsForm /> : <ContactSettingsForm />}</SettingsDrawer>
         </>
     )
 }
