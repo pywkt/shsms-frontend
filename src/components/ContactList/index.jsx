@@ -35,6 +35,8 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
                 return
             }
 
+            
+
             incomingMessageCallback(data, 'contacts')
             getAndSetContacts()
         }

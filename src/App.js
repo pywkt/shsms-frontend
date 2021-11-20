@@ -29,7 +29,8 @@ const App = ({ socket }) => {
         _id: userSettings._id,
         openLists: userSettings?.openLists,
         connectedNumbersOrder: userSettings?.connectedNumbersOrder,
-        connectedNumbers: userSettings?.connectedNumbers
+        connectedNumbers: userSettings?.connectedNumbers,
+        disableNotifications: userSettings?.disableNotifications
       }
 
       if (contextToUpdate.theme.theme !== settingsContext.settings.theme) {
@@ -46,7 +47,12 @@ const App = ({ socket }) => {
   useEffect(initApp, [])
 
   const handleIncomingMessage = async (data, view) => {
-    await scheduleLocalNotification(data, view)
+    const { disableNotifications } = await getSettings()
+
+    if (disableNotifications === false) {
+      await scheduleLocalNotification(data, view)
+    }
+
     return
   }
 
