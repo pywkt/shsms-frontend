@@ -2,6 +2,7 @@ import React from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import useStyles from './styles';
 
 const SettingsDrawer = ({ open, onClose, children }) => {
@@ -22,12 +23,19 @@ const SettingsDrawer = ({ open, onClose, children }) => {
                 <Grid
                     item
                     container
-                    direction='row'
-                    justifyContent='center'
-                    alignItems='center'
                     className={classes.settingsDrawerFooter}
                 >
-                    <Button fullWidth variant='contained' color='primary' onClick={onClose}>Close</Button>
+                    <Button
+                        fullWidth
+                        variant='text'
+                        color='primary'
+                        size='medium'
+                        onClick={onClose}
+                        endIcon={<NavigateNextIcon />}
+                        classes={{ text: classes.closeButton }}
+                    >
+                        Close
+                    </Button>
                 </Grid>
             </Grid>
         </Drawer>

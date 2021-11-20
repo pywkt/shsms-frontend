@@ -38,29 +38,30 @@ const ContactSettingsForm = ({ closeDialog }) => {
     }
 
     return (
-        <form onSubmit={handleSubmit(updateContactSettings)} style={{ height: '100vh' }}>
+        <form onSubmit={handleSubmit(updateContactSettings)} style={{ height: '100vh', width: '80vw' }}>
             <DialogContent>
                 <Grid item container direction='column'>
 
                     <Grid item>
                         <Typography variant='caption'>Contact Settings</Typography>
-                        <Divider style={{ marginBottom: 16}} />
+                        <Divider style={{ marginBottom: 16 }} />
                     </Grid>
-                    <Grid item container direction='row' alignItems='center'>
-                            <Controller
-                                control={control}
-                                name="contactAlias"
-                                defaultValue={formatPhoneNumber(phoneNumber) || phoneNumber}
-                                render={({ field }) =>
-                                    <TextField
-                                        style={{ marginRight: 10 }}
-                                        label='Alias'
-                                        variant='outlined'
-                                        {...field}
-                                    />}
-                            />
+                    <Grid item container>
+                        <Controller
+                            control={control}
+                            name="contactAlias"
+                            defaultValue=''
+                            render={({ field }) => 
+                                <TextField
+                                    fullWidth
+                                    label='Alias'
+                                    variant='outlined'
+                                    placeholder={formatPhoneNumber(phoneNumber) || phoneNumber}
+                                    {...field}
+                                />}
+                        />
 
-                            <Button type='submit' variant='contained' color='primary'>Save</Button>
+                        <Button fullWidth type='submit' variant='contained' color='primary'>Save</Button>
 
                     </Grid>
 
