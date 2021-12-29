@@ -68,9 +68,8 @@ const ContactList = ({ socket, updateTitlebar, incomingMessageCallback }) => {
         if (!result.destination) { return; }
 
         const bizarreLoveTriangle = reorder(contacts, result.source.index, result.destination.index);
-
         setContacts(bizarreLoveTriangle);
-
+        
         const updatedContactOrder = bizarreLoveTriangle.map(item => item[0]);
 
         const updateDBandContext = async () => {

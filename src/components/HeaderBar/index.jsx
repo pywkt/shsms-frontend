@@ -10,9 +10,11 @@ import Box from '@material-ui/core/Box';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import TuneIcon from '@material-ui/icons/Tune';
 import IconButton from '@material-ui/core/IconButton';
-import SettingsDialog from '../SettingsDialog';
 import useStyles from './styles';
 import { useDoubleClick } from '../../hooks/useDoubleClick';
+import SettingsDrawer from '../SettingsDrawer';
+import SettingsForm from '../Forms/SettingsForm';
+import ContactSettingsForm from '../Forms/ContactSettingsForm';
 
 const HideOnScroll = (props) => {
     const { children } = props;
@@ -26,12 +28,12 @@ const HideOnScroll = (props) => {
 }
 
 const HeaderBar = ({ label, children }) => {
-    const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
+    const [settingsDrawerOpen, setSettingsDrawerOpen] = useState(false);
     const isOnHome = window.location.pathname === '/';
     const classes = useStyles({ isOnHome });
 
     const handleRefresh = useDoubleClick(null, () => window.location.reload())
-    const handleSettingsDialog = () => setSettingsDialogOpen((prev) => !prev);
+    const handleSettingsDrawer = () => setSettingsDrawerOpen((prev) => !prev);
     const handleGoBack = () => navigate('/');
 
     return (
@@ -43,7 +45,7 @@ const HeaderBar = ({ label, children }) => {
                             <IconButton size='small' onClick={handleGoBack} className={classes.appBarIcons}><ArrowBackIosIcon /></IconButton>
                         }
                         <Typography variant='h1' color='initial' className={classes.headerBarTitle} onClick={handleRefresh}>{label}</Typography>
-                        <IconButton size='small' onClick={handleSettingsDialog} className={classes.appBarIcons}><TuneIcon /></IconButton>
+                        <IconButton size='small' onClick={handleSettingsDrawer} className={classes.appBarIcons}><TuneIcon /></IconButton>
                     </Toolbar>
                 </AppBar>
             </HideOnScroll>
@@ -53,10 +55,12 @@ const HeaderBar = ({ label, children }) => {
                 </Box>
             </Container>
 
-            <SettingsDialog
-                open={settingsDialogOpen}
-                closeDialog={handleSettingsDialog}
-            />
+            <SettingsDrawer
+                open={settingsDrawerOpen}
+                onClose={handleSettingsDrawer}
+            >
+                {isOnHome ? <SettingsForm /> : <ContactSettingsForm onClose={handleSettingsDrawer} />}
+            </SettingsDrawer>
         </>
     )
 }

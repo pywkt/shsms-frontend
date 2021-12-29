@@ -40,7 +40,7 @@ const Messages = ({ phoneNumber, updateTitlebar, incomingMessageCallback, socket
         const getAndUpdateMessages = async () => {
             const allMessages = await getMessages(locationState?.toPhoneNumber, locationState?.fromPhoneNumber)
             setMessages(allMessages?.messages)
-            updateTitlebar(allMessages?.alias || formatPhoneNumber(locationState?.fromPhoneNumber))
+            updateTitlebar(allMessages?.alias || formatPhoneNumber(locationState?.fromPhoneNumber) || locationState?.fromPhoneNumber)
         }
 
         if (messages.length === 0) {
