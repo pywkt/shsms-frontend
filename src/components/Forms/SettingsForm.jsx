@@ -1,11 +1,9 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -22,34 +20,28 @@ import * as axios from 'axios';
 
 const SettingsForm = ({ closeDialog }) => {
     const currentSettings = useContext(SettingsContext)
+
     const { control, handleSubmit, getValues, setValue } = useForm({
         defaultValues: {
             newTheme: currentSettings?.settings?.theme?.slug
         }
     });
 
-    const handleImageLinkSwitch = (e) => {
+    const handleImageLinkSwitch = async () => {
+        await updateSettings({ ...currentSettings.settings, showImageLink: !currentSettings.settings.showImageLink })
         currentSettings.setSettings({ ...currentSettings.settings, showImageLink: !currentSettings.settings.showImageLink })
     }
 
-    const submitNewSettings = async (data) => {
-        const result = await updateSettings({
-            ...currentSettings.settings, theme: { currentTheme: currentSettings.settings.theme.slug, newTheme: data.newTheme }
-        }, currentSettings)
+    const handleDisableNotifications = async () => {
+        await updateSettings({ ...currentSettings.settings, disableNotifications: !currentSettings.settings.disableNotifications })
+        currentSettings.setSettings({ ...currentSettings.settings, disableNotifications: !currentSettings.settings.disableNotifications })
+    }
 
+    const submitNewSettings = async (e) => {
+        const result = await updateSettings({ ...currentSettings.settings, theme: { currentTheme: currentSettings.settings.theme.slug, newTheme: e.target.value } })
         const findThemeResult = await themeList.find(i => i.slug === result.theme && i)
 
-        currentSettings.setSettings({
-            ...result.settings,
-            _id: result._id,
-            theme: findThemeResult,
-            showImageLink: result.showImageLink,
-            openLists: result.openLists,
-            connectedNumbersOrder: result.connectedNumbersOrder,
-            connectedNumbers: result.connectedNumbers
-        })
-
-        closeDialog()
+        currentSettings.setSettings({ ...currentSettings.settings, theme: findThemeResult })
     }
 
     const DestroyContent = () => {
@@ -65,18 +57,18 @@ const SettingsForm = ({ closeDialog }) => {
         return (
             <>
                 {view === 'confirm' ?
-                    <Grid item container direction='column' spacing={2}>
+                    <Grid item container>
                         <Grid item>
-                            <Typography variant='body2' color='primary' align='center'>
+                            <Typography variant='body2' color='primary' align='center' gutterBottom>
                                 Are you sure you want to delete all entries in the database?
                             </Typography>
                         </Grid>
-                        <Grid item container justifyContent='space-evenly'>
+                        <Grid item container direction='row' justifyContent='space-evenly'>
                             <Button variant='outlined' onClick={() => setView('')}>Cancel</Button>
                             <Button variant='contained' color='secondary' onClick={initDrop}>Drop Tables</Button>
                         </Grid>
                     </Grid> :
-                    <Button fullWidth variant='contained' color='secondary' onClick={() => setView('confirm')}>Clear Database</Button>
+                    <Button fullWidth variant='outlined' color='secondary' onClick={() => setView('confirm')}>Clear Database</Button>
                 }
             </>
         )
@@ -96,7 +88,7 @@ const SettingsForm = ({ closeDialog }) => {
         const res = await axios.post(`${process.env.REACT_APP_SMS_SERVER_URL}/settings/updateConnectedAlias`, cn,
             { headers: { "enc": process.env.REACT_APP_KEY_HASH } })
 
-        currentSettings.setSettings({...res.data, theme: currentSettings.settings.theme})
+        currentSettings.setSettings({ ...res.data, theme: currentSettings.settings.theme })
 
         setEditConnectedAlias(false)
     }
@@ -112,17 +104,12 @@ const SettingsForm = ({ closeDialog }) => {
     useEffect(getSettingsCallback, [])
 
     return (
-        <form onSubmit={handleSubmit(submitNewSettings)}>
-            <DialogContent dividers>
+        <form onSubmit={handleSubmit(submitNewSettings)} style={{ height: '100vh', width: '80vw' }}>
+            <DialogContent>
                 <Grid container direction='column' spacing={2}>
 
-                    <Grid item>
-                        <Typography variant='caption'>Connected Phone Numbers</Typography>
-                        <Divider />
-                    </Grid>
-
-                    <List dense>
-                        {currentSettings?.settings?.connectedNumbersOrder?.map((item, index) => (
+                    <List dense subheader={<Typography variant='caption' color='textSecondary'>Connected Numbers</Typography>}>
+                        {currentSettings?.settings?.connectedNumbersOrder?.map((item) => (
                             <ListItem key={item}>
                                 {editConnectedAlias !== item ?
                                     <>
@@ -133,84 +120,90 @@ const SettingsForm = ({ closeDialog }) => {
                                         />
                                         <EditIcon style={{ fontSize: 14 }} />
                                     </> :
-                                    <Grid item container justifyContent='space-between' alignItems='center'>
+                                    <Grid item container direction='row' alignItems='center' justifyContent='space-between'>
                                         <Controller
                                             name={`${item}-alias`}
-                                            label={`${item}`}
+                                            label={item}
                                             control={control}
                                             render={({ field }) =>
                                                 <TextField
-                                                    style={{ flexGrow: 1, marginRight: 10 }}
-                                                    margin='dense'
+                                                    fullWidth
                                                     variant='outlined'
                                                     label={item}
                                                     onChange={(e) => setValue(`${item}-alias`, e.target.value)}
+                                                    {...field}
                                                 />}
                                         />
 
-                                        <Button variant='contained' color='secondary' onClick={() => updateConnectedAlias(item)}>Save</Button>
+                                        <Button fullWidth variant='contained' color='primary' onClick={() => updateConnectedAlias(item)}>Save</Button>
                                     </Grid>
                                 }
                             </ListItem>
-                            // <Typography variant='body2' onClick={() => updateConnectedAlias(item)}>{item}</Typography>
                         ))}
                     </List>
 
-
-
-
-                    <Grid item>
-                        <Typography variant='caption'>Theme</Typography>
-                        <Divider />
-                    </Grid>
+                    <Divider />
 
                     <Grid item>
                         <Controller
                             render={({ field }) => (
-                                <Select {...field} fullWidth>
-                                    {themeList.map((item, index) => (
+                                <TextField {...field} select onChange={submitNewSettings} fullWidth variant='outlined' label='Theme' value={currentSettings.settings.theme.slug}>
+                                    {themeList.map((item) => (
                                         <MenuItem key={item.slug} value={item.slug}>
                                             {item.displayName}
                                         </MenuItem>
                                     ))}
-                                </Select>
+                                </TextField>
                             )}
                             name="newTheme"
                             control={control}
                         />
                     </Grid>
 
-                    <Grid item>
-                        <Grid item container justifyContent='space-between'>
-                            <Controller
-                                name='showImageLink'
-                                label='Show'
-                                control={control}
-                                render={({ field }) =>
-                                    <FormControlLabel
-                                        label="Show link to images for MMS"
-                                        control={
-                                            <Switch {...field}
-                                                checked={currentSettings.settings.showImageLink}
-                                                onChange={handleImageLinkSwitch}
-                                                size='small'
-                                            />}
-                                    />}
-                            />
-                        </Grid>
+                    <Divider />
+
+                    <Grid item container>
+                        <Controller
+                            name='showImageLink'
+                            control={control}
+                            render={({ field }) =>
+                                <FormControlLabel
+                                    label={<Typography align='right' variant='caption' style={{ marginLeft: 10 }}>Show links to images for MMS</Typography>}
+                                    control={
+                                        <Switch {...field}
+                                            checked={currentSettings.settings.showImageLink}
+                                            onChange={handleImageLinkSwitch}
+                                            size='small'
+                                        />}
+                                />}
+                        />
                     </Grid>
 
-                    <Grid item>
-                        <Typography variant='caption'>Danger</Typography>
-                        <Divider />
+                    <Grid item container>
+                        <Controller
+                            name='disablePushNotifications'
+                            control={control}
+                            render={({ field }) =>
+                                <FormControlLabel
+                                    label={<Typography align='right' variant='caption' style={{ marginLeft: 10 }}>Disable push notifications</Typography>}
+                                    control={
+                                        <Switch {...field}
+                                            checked={currentSettings.settings.disableNotifications}
+                                            onChange={handleDisableNotifications}
+                                            size='small'
+                                        />}
+                                />}
+                        />
                     </Grid>
-                    <DestroyContent />
+
+                    <Divider />
+
+                    <Grid item>
+                        <DestroyContent />
+                    </Grid>
+                    
                 </Grid>
             </DialogContent>
-            <DialogActions>
-                <Button onClick={closeDialog} color='primary'>Cancel</Button>
-                <Button type='submit' color='primary'>Save</Button>
-            </DialogActions>
         </form>
     )
 }
