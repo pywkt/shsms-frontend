@@ -42,6 +42,14 @@ I have created a pretty extensive guide on gitbook, it seems very daunting at fi
 ### Issues/Bugs
 If there's something wrong with the app, or a new feature worth talking about, submit a ticket for it through Github and it will be addressed.
 
+### December 28, 2021 v1.3.0 Release
+   * Added delete button to contact settings modal
+   * Fix incoming text to show number if it's a shortcode
+   * Changes in Settings happen onChange and db is updated
+   * Moved Settings to drawer from modal
+   * Fixed 'delete contact' button error
+   * General cleanup
+
 ### October 25, 2021 - v1.2.0 Release
    * Added ability to rename connected numbers
    * Added ability to drag/drop/reorder connected numbers
@@ -60,7 +68,7 @@ If there's something wrong with the app, or a new feature worth talking about, s
    * ~~Add multiple Twilio phone numbers to same app instance.~~
    * ~~Send text with MMS/multiple MMS in one message.~~
    * ~~Swipe down to refresh.~~
-   * Encrypt/decrypt messages to and from the database (full self-hosting may solve this. tbd.).
+   * Encrypt/decrypt messages to and from the database.
    * ~~Make top-level (owned) phone numbers draggable/sortable.~~
    * Overall code cleanup. lint, rename variables etc.
    * Add visual indicators when sending media other than images.
@@ -69,5 +77,5 @@ If there's something wrong with the app, or a new feature worth talking about, s
    * ~~Rename/create alias for your owned numbers.~~
    * Add in-app version checking.
    * ~~Fix bug where (sometimes) number/alias is incorrect in notification.~~
-   * Add option to disable all notifications through the app
-   * Move app settings to a drawer instead of the dialog it's currently in.
+   * ~~Add option to disable all notifications through the app~~
+   * ~~Move app settings to a drawer instead of the dialog it's currently in.~~
