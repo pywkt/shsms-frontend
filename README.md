@@ -48,6 +48,7 @@ If there's something wrong with the app, or a new feature worth talking about, s
    * Changes in Settings happen onChange and db is updated
    * Moved Settings to drawer from modal
    * Fixed 'delete contact' button error
+   * Updated (most) packages
    * General cleanup
 
 ### October 25, 2021 - v1.2.0 Release
